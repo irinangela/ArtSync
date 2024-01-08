@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/forgot-password.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
+// ignore: unused_import
 import 'package:myapp/utils.dart';
 
 class LoginPage2 extends StatelessWidget {
