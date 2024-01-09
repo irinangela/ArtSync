@@ -1,6 +1,6 @@
-# test
+# ArtSync
 
-A new Flutter project.
+A new Flutter project for NTUA.
 
 ## Getting Started
 

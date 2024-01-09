@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: const LoginPage1(),
+      //home: const LoginPage1(),
+      home: const CreateGroup(),
 /*     
       routes: {
         '/login2': (context) => const LoginPage2(),
