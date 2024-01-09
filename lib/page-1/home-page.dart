@@ -186,7 +186,7 @@ class _NavigationBarState extends State<NavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350,
+      width: 390,
       height: 77,
       margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
       padding: EdgeInsets.all(10),
