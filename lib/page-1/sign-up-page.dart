@@ -5,21 +5,32 @@ import 'package:myapp/utils.dart';
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
   
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           const Positioned(
-            top: 0,
-            left: 0,
+            top:0,
+            left:0,
             child: Background1(),
-          ),
+          ), 
           Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const Text(
+                    'Create an account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      height: 3,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   const Text(
                     'Enter your E-mail:',
@@ -141,16 +152,37 @@ class SignUpPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Add functionality for the signup button
-                    },
-                    child: const Text('Sign Up'),
-                  ),
+                  const SizedBox(height: 90),
                 ],
               ),
             ),
+            Positioned (
+            top: 750,
+            left: 250,
+                    child: SizedBox(
+                      width: 120,
+                      height: 50,
+                      child: ElevatedButton(
+                       onPressed: () {
+                          // Add functionality for the signup button
+                        },
+                        child: const Text('Sign Up',
+                            style: TextStyle(
+                              fontSize: 20,
+                            )
+                          ),
+                      ),
+                    ),
+                  ),
+            Positioned(
+              top: 560,
+              left: 430 / 2 - 130,
+              child: Image.asset(
+                "assets/page-1/images/undrawspecsre546x-1.png",
+                width: 260,
+                height: 190,
+              ),
+        ),
         ],
       ),
     );
@@ -168,7 +200,7 @@ class Background1 extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/page-1/images/Background1.png'),
-          fit: BoxFit.fill,
+          fit: BoxFit.fitWidth,
         ),
       ),
     );

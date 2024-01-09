@@ -1,24 +1,62 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
-import 'package:myapp/utils.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({Key? key}) : super(key: key);
   
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Stack(
         children: [
-          Positioned(
+          const Positioned(
             top: 0,
             left: 0,
             child: Background1(),
           ),
-          Center (
+          const Center(
             child: MainText(),
-          )
-        ]
-      )
+          ),
+          Positioned(
+            top: 750,
+            left: 250,
+            child: SizedBox(
+                width: 120,
+                height: 50,
+              child: SubmitButton(
+                onPressed: () {}, // No action when pressed
+                text: 'Ready',
+                fontSize: 20                
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+  final double fontSize;
+
+  const SubmitButton({
+    Key? key,
+    required this.onPressed,
+    required this.text,
+    this.fontSize = 20,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: TextStyle(fontSize: fontSize)
+        ),
     );
   }
 }
@@ -34,7 +72,7 @@ class Background1 extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/page-1/images/Background1.png'),
-          fit: BoxFit.fill,
+          fit: BoxFit.fitWidth,
         ),
       ),
     );

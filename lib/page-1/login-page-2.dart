@@ -11,6 +11,7 @@ class LoginPage2 extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: 430,
         height: 932,
@@ -62,6 +63,8 @@ class LoginPage2 extends StatelessWidget {
                         ),
                     ),
                 ),
+
+                // White container
                 Positioned(
                     left: 0,
                     top: 270,
@@ -134,120 +137,6 @@ class LoginPage2 extends StatelessWidget {
                                         ),
                                     ),
                                 ),
-                                  
-                                Positioned(
-                                  left: 200,
-                                  top: 345,
-                                  child: SizedBox(
-                                    width: 200,
-                                    height: 50,
-                                    child: Center(
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const ForgotPassword()),
-                                          );
-                                        },
-                                        child: const Text(
-                                          'Forgot my password',
-                                          style: TextStyle(
-                                            color: Color(0xFF4A4646),
-                                            fontSize: 15,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
- 
-                                
-                                Positioned(
-                                  left: MediaQuery.of(context).size.width / 2 - 150,
-                                  top: 490,
-                                  child: SizedBox(
-                                    width: 300,
-                                    height: 40,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        const SizedBox(
-                                          width: 210,
-                                          height: 50,
-                                          child: Center( 
-                                            child: Text(
-                                              'Don’t have an account?',
-                                              style: TextStyle(
-                                                color: Color(0xFF535353),
-                                                fontSize: 20,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 90,
-                                          height: 50,
-                                          child: Center(
-                                            child: TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(builder: (context) => const SignUpPage()),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Sign Up',
-                                                style: TextStyle(
-                                                  color: Color(0xFFA965E3),
-                                                  fontSize: 20,
-                                                  fontFamily: 'Inter',
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                Positioned(
-                                    left: MediaQuery.of(context).size.width / 2 - 180,
-                                    top: 415,
-                                    child: Container(
-                                        width: 360,
-                                        height: 49,
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: ShapeDecoration(
-                                            color: const Color(0xFFA75FE3),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15),
-                                            ),
-                                        ),
-                                        child: const Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                                Text(
-                                                    'Login',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 24,
-                                                        fontFamily: 'Inter',
-                                                        fontWeight: FontWeight.w500,
-                                                        height: 0,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
                                 
                                 Positioned(
                                   left: MediaQuery.of(context).size.width / 2 - 170,
@@ -315,10 +204,127 @@ class LoginPage2 extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
                             ],
                         ),
                     ),
+                ),
+
+                // Forgot Password
+                Positioned(
+                  left: 200,
+                  top: 610,
+                  child: SizedBox(
+                    width: 200,
+                    height: 50,
+                    child: Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ForgotPassword()),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot my password',
+                          style: TextStyle(
+                            color: Color(0xFF4A4646),
+                            fontSize: 15,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ), 
+               
+                // Login Button                  
+                Positioned(
+                    left: MediaQuery.of(context).size.width / 2 - 180,
+                    top: 680,
+                    child: Container(
+                        width: 360,
+                        height: 49,
+                        padding: const EdgeInsets.all(10),
+                        decoration: ShapeDecoration(
+                            color: const Color(0xFFA75FE3),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                            ),
+                        ),
+                        child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                                Text(
+                                    'Login',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+
+                // Don't have an account? Sign Up
+                Positioned(
+                  left: MediaQuery.of(context).size.width / 2 - 150,
+                  top: 760,
+                  child: SizedBox(
+                    width: 300,
+                    height: 40,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const SizedBox(
+                          width: 210,
+                          height: 50,
+                          child: Center( 
+                            child: Text(
+                              'Don’t have an account?',
+                              style: TextStyle(
+                                color: Color(0xFF535353),
+                                fontSize: 20,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 90,
+                          height: 50,
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const SignUpPage()),
+                                );
+                              },
+                              child: const Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  color: Color(0xFFA965E3),
+                                  fontSize: 20,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ]
         ),
       ),
