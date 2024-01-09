@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/create-a-group.dart';
+import 'package:myapp/page-1/group-challenge.dart';
+import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/login-page-1.dart';
 import 'package:myapp/page-1/login-page-2.dart';
+import 'package:myapp/page-1/private-challenge.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
 
 void main() => runApp(const MyApp());
@@ -16,7 +20,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: const LoginPage1(),
+      //home: const LoginPage1(),
+      home: const CreateGroup(),
 /*     
       routes: {
         '/login2': (context) => const LoginPage2(),
