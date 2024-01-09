@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+// ignore_for_file: file_names
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -192,6 +193,3 @@ class _QRViewExampleState extends State<QRViewExample> {
     super.dispose();
   }
 }
-=======
-
->>>>>>> 462c007ed3184c39e10d5627d5eb25b0cb199135

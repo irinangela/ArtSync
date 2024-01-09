@@ -35,6 +35,7 @@ dependencies:
   camera: ^0.10.5+8
   qr_code_scanner: ^1.0.1
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -72,6 +73,7 @@ flutter:
     - assets/page-1/images/Background1.png
     - assets/page-1/images/Background2.png
     - assets/page-1/images/Background3.png
+    - assets/page-1/images/Background4.png
     - assets/page-1/images/BellButton.png
     - assets/page-1/images/check.png
     - assets/page-1/images/CheckButton.png

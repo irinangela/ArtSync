@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:myapp/utils.dart';
+import 'package:myapp/page-1/choose-an-avatar.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -164,9 +165,12 @@ class SignUpPage extends StatelessWidget {
                       height: 50,
                       child: ElevatedButton(
                        onPressed: () {
-                          // Add functionality for the signup button
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ChooseAvatar()),
+                        );
                         },
-                        child: const Text('Sign Up',
+                        child: const Text('Continue',
                             style: TextStyle(
                               fontSize: 20,
                             )

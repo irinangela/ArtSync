@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/forgot-password.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
+import 'package:myapp/page-1/home-page.dart';
 // ignore: unused_import
 import 'package:myapp/utils.dart';
 
@@ -241,36 +242,44 @@ class LoginPage2 extends StatelessWidget {
                
                 // Login Button                  
                 Positioned(
-                    left: MediaQuery.of(context).size.width / 2 - 180,
-                    top: 680,
+                  left: MediaQuery.of(context).size.width / 2 - 180,
+                  top: 680,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomePage()), // Navigate to HomePage
+                      );
+                    },
                     child: Container(
-                        width: 360,
-                        height: 49,
-                        padding: const EdgeInsets.all(10),
-                        decoration: ShapeDecoration(
-                            color: const Color(0xFFA75FE3),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+                      width: 360,
+                      height: 49,
+                      padding: const EdgeInsets.all(10),
+                      decoration: ShapeDecoration(
+                        color: const Color(0xFFA75FE3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                              height: 0,
                             ),
-                        ),
-                        child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                                Text(
-                                    'Login',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w500,
-                                        height: 0,
-                                    ),
-                                ),
-                            ],
-                        ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
                 ),
 
                 // Don't have an account? Sign Up

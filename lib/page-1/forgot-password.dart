@@ -1,6 +1,6 @@
 // ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/login-page-2.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -25,7 +25,12 @@ class ForgotPassword extends StatelessWidget {
                 width: 120,
                 height: 50,
               child: SubmitButton(
-                onPressed: () {}, // No action when pressed
+                onPressed: () {
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage2()),
+                );
+                }, // No action when pressed
                 text: 'Ready',
                 fontSize: 20                
               ),
