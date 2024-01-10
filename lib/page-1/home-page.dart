@@ -1,4 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/NavigationBar.dart';
+import 'package:myapp/page-1/group-challenge.dart';
+import 'package:myapp/page-1/private-challenge.dart';
+
+void _showExitChallengeConfirmation(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Exit Ghallenge'),
+        content: Text('Are you sure you want to exit this challenge?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Perform the exit group operation
+              // Add your logic to exit the group here
+
+              // Close the dialog
+              Navigator.pop(context);
+            },
+            child: Text('Exit'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class CircularTextContainer extends StatelessWidget {
   final String text1;
@@ -58,10 +91,23 @@ class Challenge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: () {
+        _showExitChallengeConfirmation(context);
+      },
       onTap: () {
-        isGroup
-            ? print("GroupChallenge tapped")
-            : print("PrivateChallenge tapped");
+        if (isGroup) {
+          // Navigate to GroupChallengePage
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GroupChallenge()),
+          );
+        } else {
+          // Navigate to PrivateChallengePage
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PrivateChallenge()),
+          );
+        }
       },
       child: Container(
         height: 165,
@@ -289,11 +335,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      extendBodyBehindAppBar: true,
       body: Container(
         width: 430,
         decoration: const BoxDecoration(
@@ -340,7 +381,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            NavigationBar(),
+            NavigationBar1(),
           ],
         ),
       ),

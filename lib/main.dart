@@ -6,7 +6,12 @@ import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/login-page-1.dart';
 import 'package:myapp/page-1/login-page-2.dart';
 import 'package:myapp/page-1/private-challenge.dart';
+import 'package:myapp/page-1/profile-page.dart';
+import 'package:myapp/page-1/rating-page.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
+import 'package:myapp/page-1/NavigationBar.dart';
+import "package:myapp/page-1/app_state.dart";
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MyApp());
 
@@ -23,6 +28,8 @@ class MyApp extends StatelessWidget {
       ),
       home: const LoginPage1(),
       //home: const Results(),
+      //home: const LoginPage1(),
+      home: const HomePage(),
 /*     
       routes: {
         '/login2': (context) => const LoginPage2(),

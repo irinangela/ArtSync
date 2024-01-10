@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/profile-page.dart';
 
 class CircularUserInfoContainer extends StatefulWidget {
   final String username;
@@ -136,6 +137,7 @@ class _CreateGroupState extends State<CreateGroup> {
             ),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 scrollDirection: Axis.vertical,
                 itemCount: 10,
                 itemBuilder: (context, index) {
@@ -149,7 +151,10 @@ class _CreateGroupState extends State<CreateGroup> {
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                   onTap: () {
-                    print("DoneButton is clicked");
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfilePage()),
+                  );
                   },
                   child: Container(
                     margin: const EdgeInsets.all(20),
@@ -168,7 +173,7 @@ class _CreateGroupState extends State<CreateGroup> {
                           width: 30,
                         ),
                         const SizedBox(width: 5),
-                        const Text(
+                        Text(
                           "Done",
                           style: TextStyle(
                             color: Color(0xFFA75FE3),
