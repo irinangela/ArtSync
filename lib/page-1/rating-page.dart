@@ -16,7 +16,7 @@ class _ImageContainerState extends State<ImageContainer> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onDoubleTap: () {
         setState(() {
           isTapped = !isTapped;
         });
@@ -80,7 +80,7 @@ class _RatingPageState extends State<RatingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             const Column(
               children: [
                 Text(
@@ -105,7 +105,7 @@ class _RatingPageState extends State<RatingPage> {
                 ),
               ],
             ),
-            Container(
+            SizedBox(
               height: 540, // Fixed height for scrolling
               child: PageView(
                 scrollDirection: Axis.horizontal,
@@ -155,7 +155,7 @@ class _RatingPageState extends State<RatingPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => const HomePage()),
                   );
                 },
                 child: Container(

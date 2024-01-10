@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
   bool showText1 = false;
-  bool showText2 = false;
+  bool showText2 = true;
   bool showText3 = false;
 
   AppState() {

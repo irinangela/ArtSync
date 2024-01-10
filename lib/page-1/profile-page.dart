@@ -19,7 +19,7 @@ void _showQRcode(BuildContext context) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("QR code"),
+              const Text("QR code"),
               // Your image widget here
               Image.asset(
                 'assets/page-1/images/QRcode.png',
@@ -27,12 +27,12 @@ void _showQRcode(BuildContext context) {
                 height: 300,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context); // Close the dialog
                 },
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
             ],
           ),
@@ -47,14 +47,14 @@ void _showDeleteConfirmationDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Delete Group'),
-        content: Text('Are you sure you want to delete this group?'),
+        title: const Text('Delete Group'),
+        content: const Text('Are you sure you want to delete this group?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close the dialog
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -64,7 +64,7 @@ void _showDeleteConfirmationDialog(BuildContext context) {
               // Close the dialog
               Navigator.pop(context);
             },
-            child: Text('Okay'),
+            child: const Text('Okay'),
           ),
         ],
       );
@@ -125,6 +125,8 @@ class CircularUserContainer extends StatelessWidget {
 }
 
 class GroupContainer extends StatefulWidget {
+  const GroupContainer({super.key});
+
   @override
   _GroupContainerState createState() => _GroupContainerState();
 }
@@ -174,7 +176,7 @@ class _GroupContainerState extends State<GroupContainer> {
                       Container(
                         width: 25,
                         height: 25,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image:
@@ -191,7 +193,7 @@ class _GroupContainerState extends State<GroupContainer> {
                         child: Container(
                           width: 30,
                           height: 30,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               image: AssetImage(
@@ -216,8 +218,8 @@ class _GroupContainerState extends State<GroupContainer> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: isExpanded
-                                ? AssetImage('assets/page-1/images/UpArrow.png')
-                                : AssetImage(
+                                ? const AssetImage('assets/page-1/images/UpArrow.png')
+                                : const AssetImage(
                                     'assets/page-1/images/DownArrow.png'),
                             fit: BoxFit.cover,
                           ),
@@ -231,7 +233,7 @@ class _GroupContainerState extends State<GroupContainer> {
             if (isExpanded)
               Container(
                 width: 394.02,
-                margin: EdgeInsets.all(2),
+                margin: const EdgeInsets.all(2),
                 decoration: const ShapeDecoration(
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
@@ -335,13 +337,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateGroup()),
+                              builder: (context) => const CreateGroup()),
                         );
                       },
                       child: Container(
@@ -446,11 +448,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 scrollDirection: Axis.vertical,
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return GroupContainer();
+                  return const GroupContainer();
                 },
               ),
             ),
-            NavigationBar1(),
+            const NavigationBar1(),
           ],
         ),
       ),

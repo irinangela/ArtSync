@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/profile-page.dart';
+import 'package:myapp/page-1/scanner-page.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
 
 class NavigationBar1 extends StatefulWidget {
+  const NavigationBar1({super.key});
+
   @override
   _NavigationBar1State createState() => _NavigationBar1State();
 }
@@ -18,10 +21,10 @@ class _NavigationBar1State extends State<NavigationBar1> {
         builder: (context, appState, _) => Container(
           width: 390,
           height: 70,
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
-          padding: EdgeInsets.all(10),
+          margin: const EdgeInsets.fromLTRB(0, 10, 0, 15),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Color(0xFFE5D4FF), // Light Purple Background
+            color: const Color(0xFFE5D4FF), // Light Purple Background
             borderRadius: BorderRadius.circular(60),
           ),
           child: Row(
@@ -29,7 +32,10 @@ class _NavigationBar1State extends State<NavigationBar1> {
             children: [
               GestureDetector(
                 onTap: () {
-                  appState.updateShowText(1);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const QRViewExample()),
+                  );
                 },
                 child: RoundedContainer(
                   showHello: appState.showText1,
@@ -42,7 +48,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   appState.updateShowText(2);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => const HomePage()),
                   );
                 },
                 child: RoundedContainer(
@@ -56,7 +62,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   appState.updateShowText(3);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                    MaterialPageRoute(builder: (context) => const ProfilePage()),
                   );
                 },
                 child: RoundedContainer(
@@ -91,7 +97,7 @@ class RoundedContainer extends StatelessWidget {
       width: 120,
       height: 60,
       decoration: BoxDecoration(
-        color: showHello ? Color(0xFFD0A2F7) : Color(0xFFE5D4FF),
+        color: showHello ? const Color(0xFFD0A2F7) : const Color(0xFFE5D4FF),
         borderRadius: BorderRadius.circular(60),
       ),
       child: Row(
@@ -110,7 +116,7 @@ class RoundedContainer extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   labelText,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontFamily: 'Inter',

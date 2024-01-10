@@ -173,7 +173,7 @@ class _CreateGroupState extends State<CreateGroup> {
                           width: 30,
                         ),
                         const SizedBox(width: 5),
-                        Text(
+                        const Text(
                           "Done",
                           style: TextStyle(
                             color: Color(0xFFA75FE3),

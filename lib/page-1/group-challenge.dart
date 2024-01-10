@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/camera.dart';
 import 'package:myapp/page-1/rating-page.dart';
 
 void _showCenteredContainerWithImage(BuildContext context) {
@@ -25,12 +26,12 @@ void _showCenteredContainerWithImage(BuildContext context) {
                 height: 300,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context); // Close the dialog
                 },
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
             ],
           ),
@@ -268,9 +269,20 @@ class _GroupChallengeState extends State<GroupChallenge> {
               ),
             ),
             const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () {
-                print("camera is open now");
+            //const SizedBox(height: 25),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const SizedBox(width: 60),
+              GestureDetector(
+              onTap: () {/*
+                Navigator.push(
+                  
+                      context,
+                      MaterialPageRoute(builder: (context) => const CameraApp()),
+                 
+                    ); */
               },
               child: Container(
                 decoration: const BoxDecoration(
@@ -282,19 +294,17 @@ class _GroupChallengeState extends State<GroupChallenge> {
                   width: 80,
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
+              ),
+              
+              GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RatingPage()),
+                      MaterialPageRoute(builder: (context) => const RatingPage()),
                     );
                   },
                   child: Container(
-                    margin: const EdgeInsets.all(20),
+                    //margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE5D4FF),
@@ -312,7 +322,11 @@ class _GroupChallengeState extends State<GroupChallenge> {
                       ),
                     ),
                   )),
+                  //const SizedBox(width: 20),
+            ],
+            
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
