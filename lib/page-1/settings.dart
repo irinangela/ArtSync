@@ -374,7 +374,6 @@ class _SettingsState extends State<Settings> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const Settings()),
-                      // GO TO PROFILE PAGE CLASS HERE!!!
                   );
                 },
                 text: 'Save Changes',

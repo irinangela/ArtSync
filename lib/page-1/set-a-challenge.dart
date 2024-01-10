@@ -318,8 +318,8 @@ class SetChallenge extends StatelessWidget {
         ),
         Positioned(
           bottom: 20,
-          left: 290,
-          right: 20,
+          left: 250,
+          right: 30,
           child: SizedBox(
             width: 250,
             height: 50,

@@ -30,7 +30,7 @@ class ForgotPassword extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage2()),
                 );
-                }, // No action when pressed
+                }, 
                 text: 'Ready',
                 fontSize: 20                
               ),

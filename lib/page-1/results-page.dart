@@ -48,35 +48,222 @@ class Results extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Background4(),
+          const Background4(),
+          Center(
+            child: SizedBox(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'And the winner of\nthis challenge is...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Congratulations!',
+                    style: TextStyle(
+                      color: Color(0xFFA75FE3),
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Container(
+                    width: 330,
+                    height: 110, 
+                    padding: const EdgeInsets.all(20),
+                    decoration: ShapeDecoration(
+                      color: const Color.fromARGB(103, 241, 234, 255),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      shadows: const [
+                        BoxShadow(
+                          color: Color.fromARGB(137, 207, 162, 247),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage('assets/page-1/images/avatar2.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '@username1',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                            SizedBox(height: 4),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Container(
+                    width: 390,
+                    height: 200, 
+                    padding: const EdgeInsets.all(20),
+                    decoration: ShapeDecoration(
+                      color: const Color.fromARGB(103, 241, 234, 255),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      shadows: const [
+                        BoxShadow(
+                          color: Color.fromARGB(137, 207, 162, 247),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Table(
+                              border: const TableBorder(
+                                verticalInside: BorderSide(width: 1, color: Color(0xFFA75FE3)), 
+                              ),
+                            children: const [
+                              TableRow(
+                                children: [
+                                  TableCell(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Center(child: Text(
+                                      'Results',
+                                      style: TextStyle(
+                                        color: Color(0xFFA75FE3),
+                                        fontSize: 20,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.bold,))),
+                                    )),
+                                  TableCell(child: Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Center(child: Text(
+                                      'Points',
+                                      style: TextStyle(
+                                        color: Color(0xFFA75FE3),
+                                        fontSize: 20,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.bold,))),
+                                  )),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  TableCell(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('1st: @username1',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  )),
+                                  TableCell(child: Center(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('+50pnts',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  ))),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  TableCell(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('2nd: @username2',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  )),
+                                  TableCell(child: Center(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('+25pnts',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  ))),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  TableCell(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('3rd: @username3',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  )),
+                                  TableCell(child: Center(child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child:Text('+10pnts',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          )),
+                                  ))),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           Positioned(
-          bottom: 20,
-          left: 290,
-          right: 20,
-          child: SizedBox( 
-            /*
-            width: 250,
-            height: 50,
-            child: SubmitButton(       
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SetChallenge()),
-                );
-              },    
-              text: 'New',
-              fontSize: 20,
-            ), 
-            */
+            top: 750,
+            left: 220,
+            child: SizedBox(
+                width: 160,
+                height: 50,
+              child: SubmitButton(
+                onPressed: () { 
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SetChallenge()),
+                  );
+                },
+                text: 'Create New',
+                fontSize: 20                
+              ),
+            ),
           ),
-        ),
         ],
-      )
+      ),
     );
   }
-} 
+}
