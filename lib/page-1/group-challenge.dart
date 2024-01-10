@@ -1,4 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/rating-page.dart';
+
+void _showCenteredContainerWithImage(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Container(
+          height: 400,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Your image widget here
+              Image.asset(
+                'assets/page-1/images/QRcode.png',
+                width: 300,
+                height: 300,
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
 class AvatarChallenge extends StatelessWidget {
   final String username;
@@ -133,7 +173,7 @@ class _GroupChallengeState extends State<GroupChallenge> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print("qr code is now showing");
+                    _showCenteredContainerWithImage(context);
                   },
                   child: Container(
                     child: Image.asset(
@@ -210,6 +250,7 @@ class _GroupChallengeState extends State<GroupChallenge> {
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 scrollDirection: Axis.vertical,
                 itemCount: 4,
                 itemBuilder: (context, index) {
@@ -247,7 +288,10 @@ class _GroupChallengeState extends State<GroupChallenge> {
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                   onTap: () {
-                    print("RateButton is clicked");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RatingPage()),
+                    );
                   },
                   child: Container(
                     margin: const EdgeInsets.all(20),

@@ -1,4 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/NavigationBar.dart';
+import 'package:myapp/page-1/group-challenge.dart';
+import 'package:myapp/page-1/private-challenge.dart';
+
+void _showExitChallengeConfirmation(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Exit Ghallenge'),
+        content: Text('Are you sure you want to exit this challenge?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Perform the exit group operation
+              // Add your logic to exit the group here
+
+              // Close the dialog
+              Navigator.pop(context);
+            },
+            child: Text('Exit'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class CircularTextContainer extends StatelessWidget {
   final String text1;
@@ -58,10 +91,23 @@ class Challenge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: () {
+        _showExitChallengeConfirmation(context);
+      },
       onTap: () {
-        isGroup
-            ? print("GroupChallenge tapped")
-            : print("PrivateChallenge tapped");
+        if (isGroup) {
+          // Navigate to GroupChallengePage
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GroupChallenge()),
+          );
+        } else {
+          // Navigate to PrivateChallengePage
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PrivateChallenge()),
+          );
+        }
       },
       child: Container(
         height: 165,
@@ -151,131 +197,6 @@ class Challenge extends StatelessWidget {
   }
 }
 
-class NavigationBar extends StatefulWidget {
-  @override
-  _NavigationBarState createState() => _NavigationBarState();
-}
-
-class _NavigationBarState extends State<NavigationBar> {
-  bool showText1 = false;
-  bool showText2 = false;
-  bool showText3 = false;
-
-  void _showText(int containerIndex) {
-    setState(() {
-      switch (containerIndex) {
-        case 1:
-          showText1 = true;
-          showText2 = false;
-          showText3 = false;
-          break;
-        case 2:
-          showText1 = false;
-          showText2 = true;
-          showText3 = false;
-          break;
-        case 3:
-          showText1 = false;
-          showText2 = false;
-          showText3 = true;
-          break;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 390,
-      height: 77,
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Color(0xFFE5D4FF), // Light Purple Background
-        borderRadius: BorderRadius.circular(60),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () => _showText(1),
-            child: RoundedContainer(
-              showHello: showText1,
-              imageAsset: 'assets/page-1/images/ControlMenu_QR.png',
-              labelText: 'Scanner',
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _showText(2),
-            child: RoundedContainer(
-              showHello: showText2,
-              imageAsset: 'assets/page-1/images/ControlMenu_Home.png',
-              labelText: 'Home',
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _showText(3),
-            child: RoundedContainer(
-              showHello: showText3,
-              imageAsset: 'assets/page-1/images/ControlMenu_Profile.png',
-              labelText: 'Profile',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RoundedContainer extends StatelessWidget {
-  final bool showHello;
-  final String imageAsset;
-  final String labelText;
-
-  const RoundedContainer({
-    Key? key,
-    required this.showHello,
-    required this.imageAsset,
-    required this.labelText,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 60,
-      decoration: BoxDecoration(
-        color: showHello ? Color(0xFFD0A2F7) : Color(0xFFE5D4FF),
-        borderRadius: BorderRadius.circular(60),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Image.asset(
-            imageAsset,
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
-          if (showHello)
-            Positioned(
-              right: 50,
-              child: Text(
-                labelText,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -287,11 +208,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      extendBodyBehindAppBar: true,
       body: Container(
         width: 430,
         decoration: const BoxDecoration(
@@ -338,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            NavigationBar(),
+            NavigationBar1(),
           ],
         ),
       ),

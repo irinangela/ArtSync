@@ -33,6 +33,8 @@ dependencies:
   flutter:
     sdk: flutter
   camera: ^0.10.5+8
+  provider: ^5.0.0
+  shared_preferences: ^2.0.9
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -72,6 +74,7 @@ flutter:
     - assets/page-1/images/Background1.png
     - assets/page-1/images/Background2.png
     - assets/page-1/images/Background3.png
+    - assets/page-1/images/Background4.png
     - assets/page-1/images/BellButton.png
     - assets/page-1/images/check.png
     - assets/page-1/images/CheckButton.png
@@ -127,6 +130,10 @@ flutter:
     - assets/page-1/images/avatar21.png
     - assets/page-1/images/avatar22.png
     - assets/page-1/images/avatar23.png
+    - assets/page-1/images/UpArrow.png
+    - assets/page-1/images/DownArrow.png
+    - assets/page-1/images/NewGroup.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

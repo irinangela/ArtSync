@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/profile-page.dart';
 
 class CircularUserInfoContainer extends StatefulWidget {
   final String username;
@@ -136,6 +137,7 @@ class _CreateGroupState extends State<CreateGroup> {
             ),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 scrollDirection: Axis.vertical,
                 itemCount: 10,
                 itemBuilder: (context, index) {
@@ -148,40 +150,44 @@ class _CreateGroupState extends State<CreateGroup> {
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
-                  onTap: () {
-                    print("DoneButton is clicked");
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5D4FF),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/page-1/images/check.png',
-                          height: 30,
-                          width: 30,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5D4FF),
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/page-1/images/check.png',
+                        height: 30,
+                        width: 30,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        "Done",
+                        style: TextStyle(
+                          color: Color(0xFFA75FE3),
+                          fontSize: 24,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500,
+                          height: 0,
+                          decoration: TextDecoration.none,
                         ),
-                        const SizedBox(width: 5),
-                        Text(
-                          "Done",
-                          style: TextStyle(
-                            color: Color(0xFFA75FE3),
-                            fontSize: 24,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500,
-                            height: 0,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
