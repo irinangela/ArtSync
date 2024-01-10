@@ -144,7 +144,6 @@ class Results extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     child: Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
