@@ -81,7 +81,7 @@ class Challenge extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Text(
                     isGroup ? 'Group Challenge' : 'Private Challenge',
                     style: const TextStyle(
@@ -152,6 +152,8 @@ class Challenge extends StatelessWidget {
 }
 
 class NavigationBar extends StatefulWidget {
+  const NavigationBar({super.key});
+
   @override
   _NavigationBarState createState() => _NavigationBarState();
 }
@@ -188,10 +190,10 @@ class _NavigationBarState extends State<NavigationBar> {
     return Container(
       width: 390,
       height: 77,
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
-      padding: EdgeInsets.all(10),
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Color(0xFFE5D4FF), // Light Purple Background
+        color: const Color(0xFFE5D4FF), // Light Purple Background
         borderRadius: BorderRadius.circular(60),
       ),
       child: Row(
@@ -245,7 +247,7 @@ class RoundedContainer extends StatelessWidget {
       width: 120,
       height: 60,
       decoration: BoxDecoration(
-        color: showHello ? Color(0xFFD0A2F7) : Color(0xFFE5D4FF),
+        color: showHello ? const Color(0xFFD0A2F7) : const Color(0xFFE5D4FF),
         borderRadius: BorderRadius.circular(60),
       ),
       child: Row(
@@ -262,7 +264,7 @@ class RoundedContainer extends StatelessWidget {
               right: 50,
               child: Text(
                 labelText,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontFamily: 'Inter',
@@ -300,7 +302,7 @@ class _HomePageState extends State<HomePage> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Column(
+        child: const Column(
           children: [
             SizedBox(height: 170),
             Row(

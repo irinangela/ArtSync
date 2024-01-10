@@ -24,10 +24,10 @@ class _CircularUserInfoContainerState extends State<CircularUserInfoContainer> {
         print("user has been used");
       },
       child: Container(
-        margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
         decoration: BoxDecoration(
           color: tapped
-              ? Color.fromARGB(236, 170, 134, 233)
+              ? const Color.fromARGB(236, 170, 134, 233)
               : const Color(0xFFF0E6FF),
           borderRadius: BorderRadius.circular(50.0),
         ),
@@ -85,12 +85,12 @@ class _CreateGroupState extends State<CreateGroup> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             Align(
               alignment: Alignment.topLeft,
               child: Container(
-                margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(20, 20, 0, 0),
+                child: const Text(
                   'Create your new',
                   style: TextStyle(
                     color: Color(0xFF7B33B7),
@@ -105,8 +105,8 @@ class _CreateGroupState extends State<CreateGroup> {
             Align(
               alignment: Alignment.topLeft,
               child: Container(
-                margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: const Text(
                   'group!',
                   style: TextStyle(
                     color: Color(0xFF7B33B7),
@@ -118,15 +118,15 @@ class _CreateGroupState extends State<CreateGroup> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              padding: EdgeInsets.all(16.0),
-              margin: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
                 color: Colors.purple, // Purple background color
                 borderRadius: BorderRadius.circular(15.0),
               ),
-              child: Text(
+              child: const Text(
                 'Type your new GroupName',
                 style: TextStyle(
                   color: Colors.white,
@@ -168,7 +168,7 @@ class _CreateGroupState extends State<CreateGroup> {
                           width: 30,
                         ),
                         const SizedBox(width: 5),
-                        Text(
+                        const Text(
                           "Done",
                           style: TextStyle(
                             color: Color(0xFFA75FE3),
