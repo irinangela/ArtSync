@@ -273,58 +273,59 @@ class _GroupChallengeState extends State<GroupChallenge> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const SizedBox(width: 60),
-              GestureDetector(
-              onTap: () {/*
+              children: [
+                const SizedBox(width: 60),
+                GestureDetector(
+                  onTap: () {
+                    /*
                 Navigator.push(
                   
                       context,
                       MaterialPageRoute(builder: (context) => const CameraApp()),
                  
                     ); */
-              },
-              child: Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: Image.asset(
-                  'assets/page-1/images/CameraButton.png',
-                  height: 80,
-                  width: 80,
-                ),
-              ),
-              ),
-              
-              GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RatingPage()),
-                    );
                   },
                   child: Container(
-                    //margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5D4FF),
-                      borderRadius: BorderRadius.circular(25.0),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
                     ),
-                    child: const Text(
-                      "Rate",
-                      style: TextStyle(
-                        color: Color(0xFFA75FE3),
-                        fontSize: 24,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        height: 0,
-                        decoration: TextDecoration.none,
+                    child: Image.asset(
+                      'assets/page-1/images/CameraButton.png',
+                      height: 80,
+                      width: 80,
+                    ),
+                  ),
+                ),
+
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RatingPage()),
+                      );
+                    },
+                    child: Container(
+                      //margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5D4FF),
+                        borderRadius: BorderRadius.circular(25.0),
                       ),
-                    ),
-                  )),
-                  //const SizedBox(width: 20),
-            ],
-            
+                      child: const Text(
+                        "Rate",
+                        style: TextStyle(
+                          color: Color(0xFFA75FE3),
+                          fontSize: 24,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500,
+                          height: 0,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    )),
+                //const SizedBox(width: 20),
+              ],
             ),
             const SizedBox(height: 20),
           ],

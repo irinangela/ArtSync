@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/page-1/profile-page.dart';
 
 class DropDown extends StatefulWidget {
   const DropDown({super.key});
@@ -95,10 +96,7 @@ class SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(fontSize: fontSize)
-        ),
+      child: Text(text, style: TextStyle(fontSize: fontSize)),
     );
   }
 }
@@ -155,7 +153,7 @@ class _AvatarUserState extends State<AvatarUser> {
             child: CircleAvatar(
               radius: 40,
               backgroundImage: AssetImage(widget.avatarImagePath),
-              backgroundColor: Colors.transparent, 
+              backgroundColor: Colors.transparent,
             ),
           ),
           const SizedBox(height: 8),
@@ -220,7 +218,6 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                 ),
-                
                 const SizedBox(height: 20),
                 Container(
                   width: 398,
@@ -360,25 +357,24 @@ class _SettingsState extends State<Settings> {
                   child: DropDown(), // Use the DropDown widget here
                 ),
               ],
-
             ),
           ),
           Positioned(
             top: 750,
             left: 220,
             child: SizedBox(
-                width: 160,
-                height: 50,
+              width: 160,
+              height: 50,
               child: SubmitButton(
-                onPressed: () { 
-                  Navigator.push(
+                  onPressed: () {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Settings()),
-                  );
-                },
-                text: 'Save Changes',
-                fontSize: 20                
-              ),
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()),
+                    );
+                  },
+                  text: 'Save Changes',
+                  fontSize: 20),
             ),
           ),
         ],

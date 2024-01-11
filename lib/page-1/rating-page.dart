@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/page-1/home-page.dart';
+import 'package:myapp/page-1/results-page.dart';
 
 class ImageContainer extends StatefulWidget {
   final String imagePath;
@@ -155,7 +155,7 @@ class _RatingPageState extends State<RatingPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    MaterialPageRoute(builder: (context) => const Results()),
                   );
                 },
                 child: Container(

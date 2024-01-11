@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/create-a-group.dart';
+import 'package:myapp/page-1/settings.dart';
 
 void _showQRcode(BuildContext context) {
   showDialog(
@@ -218,7 +219,8 @@ class _GroupContainerState extends State<GroupContainer> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: isExpanded
-                                ? const AssetImage('assets/page-1/images/UpArrow.png')
+                                ? const AssetImage(
+                                    'assets/page-1/images/UpArrow.png')
                                 : const AssetImage(
                                     'assets/page-1/images/DownArrow.png'),
                             fit: BoxFit.cover,
@@ -293,7 +295,10 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    print("Settings are now open");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Settings()),
+                    );
                   },
                   child: Container(
                     width: 50,

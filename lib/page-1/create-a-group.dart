@@ -121,17 +121,31 @@ class _CreateGroupState extends State<CreateGroup> {
             ),
             const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.all(20.0),
+              width: 300,
               decoration: BoxDecoration(
-                color: Colors.purple, // Purple background color
-                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                'Type your new GroupName',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Group name',
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 20,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w500,
+                    height: 0,
+                  ),
                 ),
               ),
             ),
@@ -152,9 +166,10 @@ class _CreateGroupState extends State<CreateGroup> {
               child: GestureDetector(
                   onTap: () {
                     Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage()),
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()),
+                    );
                   },
                   child: Container(
                     margin: const EdgeInsets.all(20),
