@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'package:myapp/utils.dart';
 import 'package:myapp/page-1/choose-an-avatar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/page-1/services.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final _formkey = GlobalKey<FormState>();
+  String email = '';
+  String username = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -17,144 +27,69 @@ class SignUpPage extends StatelessWidget {
             child: Background1(),
           ),
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Create an account',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w600,
-                    height: 3,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Enter your E-mail:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'E-mail',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        height: 0,
-                      ),
+            child: Form(
+              key: _formkey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Create an account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      height: 3,
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Pick a username:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 20),
+                  buildTextFormField(
+                    label: 'Enter your E-mail:',
+                    hintText: 'E-mail',
+                    onChanged: (val) {
+                      setState(() => email = val);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Type in an email";
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 20),
+                  buildTextFormField(
+                    label: 'Pick a username:',
+                    hintText: 'Username',
+                    onChanged: (val) {
+                      setState(() => username = val);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Type in a username";
+                      }
+                      return null;
+                    },
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Username',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        height: 0,
-                      ),
-                    ),
+                  const SizedBox(height: 20),
+                  buildTextFormField(
+                    label: 'Pick a password:',
+                    hintText: 'Password',
+                    onChanged: (val) {
+                      setState(() => password = val);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Type in a password";
+                      }
+                      return null;
+                    },
+                    obscureText: true,
                   ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Pick a password:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextFormField(
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Password',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        height: 0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 90),
-              ],
+                  const SizedBox(height: 90),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -165,16 +100,34 @@ class SignUpPage extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ChooseAvatar()),
-                  );
+                  if (_formkey.currentState!.validate()) {
+                    // Form is valid, proceed with creating the user
+                    createUserWithEmailAndPassword(email, password)
+                        .then((User? user) {
+                      if (user != null) {
+                        // Navigate to the next page or perform any other actions
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChooseAvatar(
+                              user: user,
+                              email: email,
+                              username: username,
+                              password: password,
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Handle error
+                        print("Error creating user");
+                      }
+                    }).catchError((error) {
+                      // Handle errors if needed
+                      print("Error creating user: $error");
+                    });
+                  }
                 },
-                child: const Text('Continue',
-                    style: TextStyle(
-                      fontSize: 20,
-                    )),
+                child: const Text('Continue', style: TextStyle(fontSize: 20)),
               ),
             ),
           ),
@@ -189,6 +142,62 @@ class SignUpPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildTextFormField({
+    required String label,
+    required String hintText,
+    required ValueChanged<String> onChanged,
+    required String? Function(String?)? validator,
+    bool obscureText = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: 300,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextFormField(
+              onChanged: onChanged,
+              validator: validator,
+              obscureText: obscureText,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: hintText,
+                hintStyle: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 20,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w500,
+                height: 0,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
