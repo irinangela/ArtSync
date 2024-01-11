@@ -1,13 +1,24 @@
-// ignore_for_file: unused_local_variable
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/login-page-2.dart';
 
-class ForgotPassword extends StatelessWidget {
+class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
-  
+
+  @override
+  _ForgotPasswordState createState() => _ForgotPasswordState();
+}
+
+class _ForgotPasswordState extends State<ForgotPassword> {
+  String email = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           const Positioned(
@@ -15,24 +26,49 @@ class ForgotPassword extends StatelessWidget {
             left: 0,
             child: Background1(),
           ),
-          const Center(
-            child: MainText(),
+          Center(
+            child: MainText(
+              onEmailChanged: (val) {
+                setState(() => email = val);
+              },
+            ),
           ),
           Positioned(
             top: 750,
             left: 250,
             child: SizedBox(
-                width: 120,
-                height: 50,
+              width: 120,
+              height: 50,
               child: SubmitButton(
                 onPressed: () {
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage2()),
-                );
-                }, 
+                  // Show a dialog with the entered email when the button is pressed
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                            'Please follow the directions we have sent you to $email to create a new password.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              // Navigate to LoginPage1 without context
+                              Navigator.pushReplacement(
+                                // Use pushReplacement to replace the current route
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage2(),
+                                ),
+                              );
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 text: 'Ready',
-                fontSize: 20                
+                fontSize: 20,
               ),
             ),
           ),
@@ -42,50 +78,10 @@ class ForgotPassword extends StatelessWidget {
   }
 }
 
-class SubmitButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final String text;
-  final double fontSize;
-
-  const SubmitButton({
-    Key? key,
-    required this.onPressed,
-    required this.text,
-    this.fontSize = 20,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(fontSize: fontSize)
-        ),
-    );
-  }
-}
-
-class Background1 extends StatelessWidget {
-  const Background1({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 932,
-      width: 430,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/page-1/images/Background1.png'),
-          fit: BoxFit.fitWidth,
-        ),
-      ),
-    );
-  }
-}
-
 class MainText extends StatelessWidget {
-  const MainText({Key? key}) : super(key: key);
+  final ValueChanged<String> onEmailChanged;
+
+  const MainText({Key? key, required this.onEmailChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +96,7 @@ class MainText extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Column(
+              Column(
                 children: [
                   SizedBox(height: 200),
                   Text(
@@ -131,10 +127,10 @@ class MainText extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
               Column(
                 children: [
-                  const Text(
+                  Text(
                     'Please type your Email Address',
                     style: TextStyle(
                       color: Colors.black,
@@ -144,7 +140,7 @@ class MainText extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   Container(
                     width: 340,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -153,9 +149,11 @@ class MainText extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: TextFormField(
+                      onChanged: onEmailChanged,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 10.0),
                         hintText: 'E-mail',
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -173,14 +171,14 @@ class MainText extends StatelessWidget {
                       ),
                     ),
                   ),
-                 ],
+                ],
               ),
             ],
           ),
         ),
         Positioned(
           top: 490,
-          left: MediaQuery.of(context).size.width / 2 - 130,
+          left: screenWidth / 2 - 130,
           child: Image.asset(
             "assets/page-1/images/undrawwelldonere3hpo-1.png",
             width: 260,
@@ -188,6 +186,48 @@ class MainText extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+  final double fontSize;
+
+  const SubmitButton({
+    Key? key,
+    required this.onPressed,
+    required this.text,
+    this.fontSize = 20,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: TextStyle(fontSize: fontSize),
+      ),
+    );
+  }
+}
+
+class Background1 extends StatelessWidget {
+  const Background1({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 932,
+      width: 430,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/page-1/images/Background1.png'),
+          fit: BoxFit.fitWidth,
+        ),
+      ),
     );
   }
 }

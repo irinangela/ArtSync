@@ -26,3 +26,19 @@ Future<User?> createUserWithEmailAndPassword(
     }
   }
 }
+
+class ConnectedUser {
+  final String username;
+  final String password;
+  final String QRcode;
+  final String avatar;
+  final int points;
+
+  ConnectedUser({
+    required this.username,
+    required this.password,
+    required this.QRcode,
+    required this.avatar,
+    required this.points,
+  });
+}
