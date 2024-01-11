@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/group-challenge.dart';
 import 'package:myapp/page-1/private-challenge.dart';
+import 'package:myapp/page-1/services.dart';
 
 void _showExitChallengeConfirmation(BuildContext context) {
   showDialog(

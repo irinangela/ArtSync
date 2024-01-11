@@ -104,7 +104,7 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
 
   // Function to get the storage path for the avatar
   String getStoragePath(String assetPath) {
-    return 'gs://test-58e55.appspot.com/${assetPath.split('/').last}';
+    return '${assetPath}';
   }
 
   // Function to update Firestore with user information
@@ -122,6 +122,8 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           'email': widget.email,
           'points': 0,
           'QRcode': 'gs://test-58e55.appspot.com/QRcode.png',
+          'ChallengeDuration': 5,
+          'PrivateChallengeID': 1,
         }, SetOptions(merge: true));
 
         print('Firestore updated successfully!');

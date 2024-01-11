@@ -28,11 +28,13 @@ Future<User?> createUserWithEmailAndPassword(
 }
 
 class ConnectedUser {
-  final String username;
-  final String password;
-  final String QRcode;
-  final String avatar;
-  final int points;
+  String username;
+  String password;
+  String QRcode;
+  String avatar;
+  int points;
+  int ChallengeDuration;
+  int PrivateChallengeID;
 
   ConnectedUser({
     required this.username,
@@ -40,5 +42,7 @@ class ConnectedUser {
     required this.QRcode,
     required this.avatar,
     required this.points,
+    required this.ChallengeDuration,
+    required this.PrivateChallengeID,
   });
 }

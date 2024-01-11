@@ -34,7 +34,8 @@ class _NavigationBar1State extends State<NavigationBar1> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const QRViewExample()),
+                    MaterialPageRoute(
+                        builder: (context) => const QRViewExample()),
                   );
                 },
                 child: RoundedContainer(
@@ -62,7 +63,8 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   appState.updateShowText(3);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage()),
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()),
                   );
                 },
                 child: RoundedContainer(
