@@ -3,6 +3,8 @@ import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/group-challenge.dart';
 import 'package:myapp/page-1/private-challenge.dart';
+import 'package:myapp/page-1/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void _showExitChallengeConfirmation(BuildContext context) {
   showDialog(
@@ -34,18 +36,25 @@ void _showExitChallengeConfirmation(BuildContext context) {
   );
 }
 
-class CircularTextContainer extends StatelessWidget {
-  final String text1;
-  final String text2;
+//this is the class that show the circle with the points and the level
+
+class Points extends StatefulWidget {
+  final String number;
+  final String points;
   final Color containerColor;
 
-  const CircularTextContainer({
+  const Points({
     Key? key,
-    required this.text1,
-    required this.text2,
+    required this.number,
+    required this.points,
     required this.containerColor,
   }) : super(key: key);
 
+  @override
+  State<Points> createState() => _PointsState();
+}
+
+class _PointsState extends State<Points> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,13 +63,13 @@ class CircularTextContainer extends StatelessWidget {
       height: 120,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: containerColor,
+        color: widget.containerColor,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            text1,
+            widget.number,
             style: const TextStyle(
                 color: Color(0xFF7B33B7),
                 fontSize: 36,
@@ -69,7 +78,7 @@ class CircularTextContainer extends StatelessWidget {
                 height: 0),
           ),
           Text(
-            text2,
+            widget.points,
             style: const TextStyle(
               color: Color(0xFF7B33B7),
               fontSize: 24,
@@ -84,16 +93,29 @@ class CircularTextContainer extends StatelessWidget {
   }
 }
 
-class Challenge extends StatelessWidget {
-  final UserData userData;
-  final bool isGroup;
+//this is the class for private and group challenges
 
- Challenge({
+class Challenge extends StatefulWidget {
+  UserData userData;
+  bool isGroup;
+  String challengeTitle;
+  String duration;
+  String groupName;
+
+  Challenge({
     Key? key,
     required this.userData,
     this.isGroup = false,
+    this.challengeTitle = '',
+    this.groupName = '',
+    this.duration = '',
   }) : super(key: key);
 
+  @override
+  State<Challenge> createState() => _ChallengeState();
+}
+
+class _ChallengeState extends State<Challenge> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -101,18 +123,21 @@ class Challenge extends StatelessWidget {
         _showExitChallengeConfirmation(context);
       },
       onTap: () {
-        if (isGroup) {
+        if (widget.isGroup) {
           // Navigate to GroupChallengePage
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GroupChallenge(userData: userData)),
+            MaterialPageRoute(
+                builder: (context) =>
+                    GroupChallenge(userData: widget.userData)),
           );
-          
         } else {
           // Navigate to PrivateChallengePage
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PrivateChallenge(userData: userData)),
+            MaterialPageRoute(
+                builder: (context) =>
+                    PrivateChallenge(userData: widget.userData)),
           );
         }
       },
@@ -122,7 +147,7 @@ class Challenge extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: isGroup
+          color: widget.isGroup
               ? const Color.fromARGB(255, 192, 157, 248)
               : Colors.deepPurple,
           borderRadius: BorderRadius.circular(40.0),
@@ -136,7 +161,7 @@ class Challenge extends StatelessWidget {
                 children: [
                   const SizedBox(width: 20),
                   Text(
-                    isGroup ? 'Group Challenge' : 'Private Challenge',
+                    widget.challengeTitle,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 26,
@@ -149,15 +174,15 @@ class Challenge extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 45),
-            isGroup
-                ? const Row(
+            widget.isGroup
+                ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Group Name",
-                          style: TextStyle(
+                          widget.groupName,
+                          style: const TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
                             fontFamily: 'Inter',
@@ -169,8 +194,8 @@ class Challenge extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          "15d 2h 12min",
-                          style: TextStyle(
+                          widget.duration,
+                          style: const TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
                             fontFamily: 'Inter',
@@ -181,12 +206,12 @@ class Challenge extends StatelessWidget {
                       ),
                     ],
                   )
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "2d 5h 36min",
-                        style: TextStyle(
+                        widget.duration,
+                        style: const TextStyle(
                           color: Color(0xFFD0A2F7),
                           fontSize: 20,
                           fontFamily: 'Inter',
@@ -194,7 +219,7 @@ class Challenge extends StatelessWidget {
                           height: 0,
                         ),
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                     ],
                   ),
           ],
@@ -213,11 +238,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Map<String, String>> challengeInfo = [];
+  Map<String, String> privchallengeInfo = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadChallenges();
+  }
+
+  Future<void> loadChallenges() async {
+    challengeInfo = await getGroupChallengesForUser(widget.userData);
+    privchallengeInfo = await getPrivateChallengeForUser(widget.userData);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Username: ${widget.userData.currentUser?.username}');
+
+    if (isLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SpinKitFadingCircle(
+              color: Colors.blue, // Choose your desired color
+              size: 50.0, // Choose your desired size
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Loading Challenges...',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
-      body: Container(        
+      body: Container(
         width: 430,
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -227,13 +290,17 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           children: [
-          const SizedBox(height: 170),
-            const Row(
+            SizedBox(height: 170),
+            Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  'Level: Beginner ',
-                  style: TextStyle(
+                  (widget.userData.currentUser?.points ?? 0) < 50
+                      ? 'Level: Beginner'
+                      : (widget.userData.currentUser?.points ?? 0) <= 200
+                          ? 'Level: Intermediate'
+                          : 'Level: Pro',
+                  style: const TextStyle(
                     color: Color(0xFF7B33B7),
                     fontSize: 20,
                     fontFamily: 'Inter',
@@ -241,9 +308,9 @@ class _HomePageState extends State<HomePage> {
                     height: 0,
                   ),
                 ),
-                CircularTextContainer(
-                  text1: '342',
-                  text2: 'points',
+                Points(
+                  number: '${widget.userData.currentUser?.points}',
+                  points: 'points',
                   containerColor: Color(0xFFE5D4FF),
                 ),
               ],
@@ -253,23 +320,61 @@ class _HomePageState extends State<HomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Challenge(userData: widget.userData, isGroup: false),
-                    Challenge(userData: widget.userData, isGroup: true),
-                    Challenge(userData: widget.userData, isGroup: true),
-                    Challenge(userData: widget.userData, isGroup: true),
-                    Challenge(userData: widget.userData, isGroup: true),
-                    Challenge(userData: widget.userData, isGroup: true),
-                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 15),
+                        const Text(
+                          "Your private challenge:",
+                          style: const TextStyle(
+                            color: Color(0xFFA75FE3),
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Challenge(
+                      userData: widget.userData,
+                      isGroup: false,
+                      duration: privchallengeInfo['duration'] ?? '',
+                      groupName: privchallengeInfo['groupName'] ?? '',
+                      challengeTitle: privchallengeInfo['title'] ?? '',
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 15),
+                        const Text(
+                          "Your group challenges:",
+                          style: const TextStyle(
+                            color: Color(0xFFA75FE3),
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    for (int i = 0; i < challengeInfo.length; i++)
+                      Challenge(
+                        userData: widget.userData,
+                        isGroup: true,
+                        duration: challengeInfo[i]['duration'] ?? '',
+                        groupName: challengeInfo[i]['groupName'] ?? '',
+                        challengeTitle: challengeInfo[i]['title'] ?? '',
+                      ),
                   ],
                 ),
               ),
             ),
             NavigationBar1(userData: widget.userData),
-            
           ],
         ),
       ),
     );
   }
-  
 }
