@@ -456,7 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 scrollDirection: Axis.vertical,
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return GroupContainer();
+                  return const GroupContainer();
                 },
               ),
             ),

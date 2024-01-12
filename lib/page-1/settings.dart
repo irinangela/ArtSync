@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:myapp/page-1/profile-page.dart';
 import 'package:myapp/models.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/page-1/login-page-1.dart';
 
 class DropDown extends StatefulWidget {
   final Function(String) onChanged;
 
-    const DropDown({
+  const DropDown({
     Key? key,
     required this.onChanged,
   }) : super(key: key);
@@ -28,7 +29,6 @@ class _DropDownState extends State<DropDown> {
             setState(() {
               isDropdownOpen = !isDropdownOpen;
             });
-            
           },
           child: Container(
             width: 250,
@@ -63,11 +63,11 @@ class _DropDownState extends State<DropDown> {
             ),
             child: Column(
               children: [
-                buildDropdownItem('1 day',1),
-                buildDropdownItem('5 days',5),
-                buildDropdownItem('1 week',7),
-                buildDropdownItem('2 weeks',14),
-                buildDropdownItem('1 month',30),
+                buildDropdownItem('1 day', 1),
+                buildDropdownItem('5 days', 5),
+                buildDropdownItem('1 week', 7),
+                buildDropdownItem('2 weeks', 14),
+                buildDropdownItem('1 month', 30),
               ],
             ),
           ),
@@ -183,12 +183,14 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   late String selectedAvatar;
   late int selectedChallengeDuration;
+  late TextEditingController usernameController;
 
   @override
   void initState() {
     super.initState();
     selectedAvatar = '';
     selectedChallengeDuration = 5;
+    usernameController = TextEditingController();
   }
 
   @override
@@ -196,7 +198,7 @@ class _SettingsState extends State<Settings> {
     print('Username: ${widget.userData.currentUser?.username}');
     final List<String> avatars = List.generate(
         23, (index) => 'assets/page-1/images/avatar${index + 1}.png');
-
+    usernameController = TextEditingController();
     return Scaffold(
       body: Stack(
         children: [
@@ -204,186 +206,182 @@ class _SettingsState extends State<Settings> {
             child: Background2(),
           ),
           Center(
-            child: Consumer<UserData>(
-              builder: (context, userData, _) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Settings',
-                      style: TextStyle(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    height: 0,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 394,
+                  decoration: const ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        width: 1,
                         color: Colors.black,
-                        fontSize: 30,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 398,
+                  height: 51,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFF1EAFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Change username',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  key: const Key('usernameTextField'),
+                  width: 300,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      controller: usernameController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'New Username',
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 20,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         height: 0,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 394,
-                      decoration: const ShapeDecoration(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            width: 1,
-                            color: Colors.black,
-                            style: BorderStyle.solid,
-                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 398,
+                  height: 51,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFF1EAFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Change avatar',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(avatars.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AvatarUser(
+                          avatarImagePath: avatars[index],
+                          isSelected: avatars[index] == selectedAvatar,
+                          onTap: () {
+                            setState(() {
+                              selectedAvatar = avatars[index];
+                            });
+                          },
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  width: 398,
+                  height: 51,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFF1EAFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 398,
-                      height: 51,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFF1EAFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Change Private Challenges’ frequency',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
                         ),
                       ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Change username',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 300,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'New Username',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500,
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 398,
-                      height: 51,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFF1EAFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Change avatar',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(avatars.length, (index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: AvatarUser(
-                              avatarImagePath: avatars[index],
-                              isSelected: avatars[index] == selectedAvatar,
-                              onTap: () {
-                                setState(() {
-                                  selectedAvatar = avatars[index];
-                                });
-                              },
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: 398,
-                      height: 51,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFF1EAFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Change Private Challenges’ frequency',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                        child: DropDown(
-                        onChanged: (item) {
-                          selectedChallengeDuration = getDurationValue(item);
-                          Provider.of<UserData>(context, listen: false)
-                              .updateChallengeDuration(selectedChallengeDuration);
-                              print('Selected Challenge Duration: $selectedChallengeDuration');
-                            print('Selected Challenge Duration (string): $item');
-                        },
-                      ),
-                      
-                    ),
-                  ],
-                  
-                );
-              }
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: DropDown(
+                    onChanged: (item) {
+                      selectedChallengeDuration = getDurationValue(item);
+                      Provider.of<UserData>(context, listen: false)
+                          .updateChallengeDuration(selectedChallengeDuration);
+                      print('Selected Challenge Duration: $selectedChallengeDuration');
+                      print('Selected Challenge Duration (string): $item');
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           Positioned(
@@ -393,30 +391,46 @@ class _SettingsState extends State<Settings> {
               width: 160,
               height: 50,
               child: SubmitButton(
-              onPressed: () async {
-                          print('Hooray! Changes saved 1.');
-                          // Get the user data from the provider
-                          UserData userData = Provider.of<UserData>(context, listen: false);
-                          print('Hooray! Changes saved 2.');
-                          // Update the challenge duration in the user data
-                          //userData.updateChallengeDuration(selectedChallengeDuration);
-                          print('Hooray! Changes saved 3.');
-                          // Update the challenge duration in Firestore
-                          print('Username: ${widget.userData.currentUser?.username}');
-                          await userData.updateChallengeDurationInFirestore(widget.userData,selectedChallengeDuration);
-                          print('Hooray! Changes saved 4.');
-                          // Navigate to the profile page or perform other actions
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(userData: widget.userData),
-                            ),
-                          );
-                        },
-                  text: 'Save Changes',
-                  fontSize: 20),
+                onPressed: () async {
+                  // Get the user data from the provider
+                  UserData userData = Provider.of<UserData>(context, listen: false);
+                  // Update the challenge duration in Firestore
+                  final newUsername = usernameController.text;
+                  await userData.updateChallengeDurationInFirestore(widget.userData, selectedChallengeDuration);
+                  await userData.updateAvatarInFirestore(widget.userData, selectedAvatar);
+                  await userData.updateUsernameInFirestore(widget.userData, newUsername);
+                  // Navigate to the profile page or perform other actions
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(userData: widget.userData),
+                    ),
+                  );
+                },
+                text: 'Save Changes',
+                fontSize: 20,
+              ),
             ),
           ),
+          Positioned(
+            top: 750,
+            left: 30,
+            child: SizedBox(
+              width: 160,
+              height: 50,
+              child: SubmitButton(
+                onPressed: () {
+                  Provider.of<UserData>(context, listen: false).clearUser();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage1()),
+                  );
+                },
+                text: 'Logout',
+                fontSize: 20,
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -435,8 +449,7 @@ class _SettingsState extends State<Settings> {
       case '1 month':
         return 30;
       default:
-        return 5; 
+        return 5;
     }
   }
-
 }

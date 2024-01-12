@@ -88,7 +88,7 @@ class Challenge extends StatelessWidget {
   final UserData userData;
   final bool isGroup;
 
- Challenge({
+ const Challenge({
     Key? key,
     required this.userData,
     this.isGroup = false,

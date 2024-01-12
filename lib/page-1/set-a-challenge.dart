@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
+import 'package:myapp/page-1/camera.dart';
 
 class DropDown extends StatefulWidget {
   const DropDown({super.key});
@@ -122,7 +124,10 @@ class Background2 extends StatelessWidget {
 
 class SetChallenge extends StatelessWidget {
   final UserData userData;
-  const SetChallenge({Key? key, required this.userData}) : super(key: key);
+  SetChallenge({Key? key, required this.userData}) : super(key: key);
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +138,6 @@ class SetChallenge extends StatelessWidget {
           child: Background2(),
         ),
         Positioned.fill(
-            // Ensure the SingleChildScrollView takes the entire space
             child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Padding(
@@ -217,6 +221,7 @@ class SetChallenge extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
+                      controller: titleController,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'e.g. Starry Night',
@@ -258,6 +263,7 @@ class SetChallenge extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
+                      controller: descriptionController,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'e.g. Imagine you just cut your ear off...',
@@ -280,29 +286,17 @@ class SetChallenge extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 20), // Spacing
                 const Text(
                   textAlign: TextAlign.center,
-                  'Would you like to also add a photo for inspiration?',
+                  'Choose the duration of the challenge:',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w400,
                     height: 0,
-                  ),
-                ),
-                const SizedBox(height: 20), // Spacing
-                GestureDetector(
-                  onTap: () {
-                    print("camera is open now");
-                  }, //open camera
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset('assets/page-1/images/CameraButton.png',
-                        height: 80, width: 80),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -322,11 +316,25 @@ class SetChallenge extends StatelessWidget {
             width: 250,
             height: 50,
             child: SubmitButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
-                );
+              onPressed: () async {
+                String title = titleController.text;
+                String description = descriptionController.text;
+                if (title.isNotEmpty && description.isNotEmpty) {
+                  await FirebaseFirestore.instance
+                      .collection('Challenges')
+                      .add({
+                    'Title': title,
+                    'Description': description,
+                  });
+                  print("doooooooooooooooooooooooone");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
+                  );
+                } else {
+                // Show an error message or handle the case where title or description is empty
+                print('Title and description cannot be empty.');
+              }
               },
               text: 'Submit',
               fontSize: 20,

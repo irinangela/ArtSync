@@ -1,59 +1,65 @@
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 
+late List<CameraDescription> _cameras;
+
+void main() => runApp(const MaterialApp(home: CameraApp()));
 /*
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  _cameras = await availableCameras();
+  runApp(const CameraApp());
+}
+*/
+/// CameraApp is the Main Application.
 class CameraApp extends StatefulWidget {
-  const CameraApp({Key? key}) : super(key: key);
+  /// Default Constructor
+  const CameraApp({super.key});
 
   @override
   State<CameraApp> createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
-  late CameraController? _controller; // Make it nullable
+  late CameraController controller;
 
   @override
   void initState() {
     super.initState();
-    initializeCamera();
-  }
-
-  Future<void> initializeCamera() async {
-    final cameras = await availableCameras();
-    _controller = CameraController(cameras[0], ResolutionPreset.max);
-
-    try {
-      await _controller!.initialize();
-      if (mounted) {
-        setState(() {});
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
       }
-    } on CameraException catch (e) {
-      if (e.code == 'CameraAccessDenied') {
-        // Handle access errors here.
-      } else {
-        // Handle other errors here.
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            // Handle access errors here.
+            break;
+          default:
+            // Handle other errors here.
+            break;
+        }
       }
-    }
+    });
   }
 
   @override
   void dispose() {
-    _controller?.dispose(); // Dispose only if it's not null
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_controller != null && _controller!.value.isInitialized) {
-      return Scaffold(
-        body: CameraPreview(_controller!),
-      );
-    } else {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(), // Show a loading indicator while camera initializes
-        ),
-      );
+    if (!controller.value.isInitialized) {
+      return Container();
     }
+    return MaterialApp(
+      home: CameraPreview(controller),
+    );
   }
 }
-
-*/
