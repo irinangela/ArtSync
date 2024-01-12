@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/home-page.dart';
+import 'package:myapp/models.dart';
 
 class Background2 extends StatelessWidget {
   const Background2({Key? key}) : super(key: key);
@@ -95,22 +96,25 @@ class ChooseAvatar extends StatefulWidget {
 
 class _ChooseAvatarState extends State<ChooseAvatar> {
   late String selectedAvatar;
+  late UserData userData;
 
   @override
   void initState() {
     super.initState();
     selectedAvatar = '';
+    userData = UserData();
   }
 
   // Function to get the storage path for the avatar
   String getStoragePath(String assetPath) {
-    return '${assetPath}';
+    return assetPath;
   }
 
   // Function to update Firestore with user information
   Future<void> updateFirestore() async {
     try {
       if (widget.user != null) {
+        //UserData userData = UserData();
         // Create or update user document in Firestore
         await FirebaseFirestore.instance
             .collection('Users')
@@ -121,12 +125,23 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           'password': widget.password,
           'email': widget.email,
           'points': 0,
-          'QRcode': 'gs://test-58e55.appspot.com/QRcode.png',
+          'QRcode': 'assets/page-1/images/QRcode.png',
           'ChallengeDuration': 5,
           'PrivateChallengeID': 1,
         }, SetOptions(merge: true));
 
         print('Firestore updated successfully!');
+        // Update UserData with the new user information
+        userData.setUser(UserInfoModel(
+          username: widget.username,
+          email: widget.email,
+          password: widget.password,
+          QRcode: 'assets/page-1/images/QRcode.png',
+          avatar: getStoragePath(selectedAvatar),
+          points: 0,
+          ChallengeDuration: 5,
+          PrivateChallengeID: 1,
+        ));
       } else {
         print('Error: User is null.');
       }
@@ -247,7 +262,7 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
                     await updateFirestore();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) =>  HomePage(userData: userData)),
                     );
                   },
                   text: 'Sign Up',

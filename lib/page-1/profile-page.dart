@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/create-a-group.dart';
 import 'package:myapp/page-1/settings.dart';
@@ -268,7 +269,8 @@ class _GroupContainerState extends State<GroupContainer> {
 }
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final UserData userData;
+  const ProfilePage({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -277,6 +279,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    print('Username: ${widget.userData.currentUser?.username}');
     return Scaffold(
       body: Container(
         width: 430,
@@ -297,7 +300,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Settings()),
+                      MaterialPageRoute(builder: (context) => Settings(userData: widget.userData)),
                     );
                   },
                   child: Container(
@@ -348,7 +351,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const CreateGroup()),
+                              builder: (context) => CreateGroup(userData: widget.userData)),
                         );
                       },
                       child: Container(
@@ -453,11 +456,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 scrollDirection: Axis.vertical,
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return const GroupContainer();
+                  return GroupContainer();
                 },
               ),
             ),
-            const NavigationBar1(),
+            NavigationBar1(userData: widget.userData),
           ],
         ),
       ),

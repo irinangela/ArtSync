@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/set-a-challenge.dart';
 
 class Background4 extends StatelessWidget {
@@ -44,7 +45,8 @@ class SubmitButton extends StatelessWidget {
 }
 
 class Results extends StatelessWidget {
-  const Results({Key? key}) : super(key: key);
+  final UserData userData;
+  const Results({Key? key, required this.userData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +255,7 @@ class Results extends StatelessWidget {
                 onPressed: () { 
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SetChallenge()),
+                      MaterialPageRoute(builder: (context) => SetChallenge(userData: userData)),
                   );
                 },
                 text: 'Create New',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
 
 class DropDown extends StatefulWidget {
@@ -120,7 +121,8 @@ class Background2 extends StatelessWidget {
 }
 
 class SetChallenge extends StatelessWidget {
-  const SetChallenge({Key? key}) : super(key: key);
+  final UserData userData;
+  const SetChallenge({Key? key, required this.userData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +325,7 @@ class SetChallenge extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
                 );
               },
               text: 'Submit',

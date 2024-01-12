@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/profile-page.dart';
 import 'package:myapp/page-1/scanner-page.dart';
@@ -6,7 +7,8 @@ import 'package:provider/provider.dart';
 import 'app_state.dart';
 
 class NavigationBar1 extends StatefulWidget {
-  const NavigationBar1({super.key});
+  final UserData userData;
+  const NavigationBar1({Key? key, required this.userData}) : super(key: key);
 
   @override
   _NavigationBar1State createState() => _NavigationBar1State();
@@ -49,7 +51,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   appState.updateShowText(2);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    MaterialPageRoute(builder: (context) =>  HomePage(userData: widget.userData)),
                   );
                 },
                 child: RoundedContainer(
@@ -64,7 +66,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ProfilePage()),
+                        builder: (context) =>  ProfilePage(userData: widget.userData)),
                   );
                 },
                 child: RoundedContainer(

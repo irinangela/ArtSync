@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/page-1/camera.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/rating-page.dart';
 
 void _showCenteredContainerWithImage(BuildContext context) {
@@ -95,7 +95,8 @@ class AvatarChallenge extends StatelessWidget {
 }
 
 class GroupChallenge extends StatefulWidget {
-  const GroupChallenge({Key? key}) : super(key: key);
+  final UserData userData;
+  const GroupChallenge({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<GroupChallenge> createState() => _GroupChallengeState();
@@ -302,7 +303,7 @@ class _GroupChallengeState extends State<GroupChallenge> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const RatingPage()),
+                            builder: (context) => RatingPage(userData: widget.userData)),
                       );
                     },
                     child: Container(

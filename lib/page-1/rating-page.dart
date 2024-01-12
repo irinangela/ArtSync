@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/results-page.dart';
 
 class ImageContainer extends StatefulWidget {
@@ -54,7 +55,8 @@ class _ImageContainerState extends State<ImageContainer> {
 }
 
 class RatingPage extends StatefulWidget {
-  const RatingPage({Key? key}) : super(key: key);
+  final UserData userData;
+  const RatingPage({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<RatingPage> createState() => _RatingPageState();
@@ -155,7 +157,7 @@ class _RatingPageState extends State<RatingPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Results()),
+                    MaterialPageRoute(builder: (context) => Results(userData: widget.userData)),
                   );
                 },
                 child: Container(

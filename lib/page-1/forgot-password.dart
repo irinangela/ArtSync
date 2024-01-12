@@ -60,7 +60,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 ),
                               );
                             },
-                            child: Text('OK'),
+                            child: const Text('OK'),
                           ),
                         ],
                       );
@@ -96,7 +96,7 @@ class MainText extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
+              const Column(
                 children: [
                   SizedBox(height: 200),
                   Text(
@@ -127,10 +127,10 @@ class MainText extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Column(
                 children: [
-                  Text(
+                  const Text(
                     'Please type your Email Address',
                     style: TextStyle(
                       color: Colors.black,
@@ -140,7 +140,7 @@ class MainText extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Container(
                     width: 340,
                     padding: const EdgeInsets.symmetric(horizontal: 10),

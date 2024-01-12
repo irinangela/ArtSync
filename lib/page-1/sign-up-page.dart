@@ -110,6 +110,19 @@ class _SignUpPageState extends State<SignUpPage> {
                     createUserWithEmailAndPassword(email, password)
                         .then((User? user) {
                       if (user != null) {
+                        /*
+                        UserInfo userInfo = UserInfo(
+                          username: username,
+                          email: email,
+                          password: password,
+                          QRcode: 'assets/page-1/images/QRcode.png',
+                          //avatar: 'assets/page-1/images/avatar3.png',
+                          points: 0,
+                          challengeDuration: 5,
+                          privateChallengeID: 1,
+                        );
+                        UserData.setUser(userInfo);
+                        */
                         // Navigate to the next page or perform any other actions
                         Navigator.push(
                           context,

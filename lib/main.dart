@@ -14,6 +14,9 @@ import 'package:myapp/page-1/sign-up-page.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import "package:myapp/page-1/app_state.dart";
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:myapp/models.dart';
+import 'package:provider/provider.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +24,12 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserData(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,41 +44,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
       ),
       home: const LoginPage1(),
-      //home: const Results(),
-      //home: const LoginPage1(),
-      //home: const HomePage(),
-/*     
-      routes: {
-        '/login2': (context) => const LoginPage2(),
-        '/signup': (context) => const SignUpPage(),
-      }
-*/
     );
   }
 }
-
-/*
-class MyLoginPage extends StatelessWidget {
-  const MyLoginPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main Page'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage1()),
-            );
-          },
-          child: const Text('Go to Login Page 1'),
-        ),
-      ),
-    );
-  }
-}
-*/

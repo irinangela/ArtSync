@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/profile-page.dart';
 
 class CircularUserInfoContainer extends StatefulWidget {
@@ -61,7 +62,8 @@ class _CircularUserInfoContainerState extends State<CircularUserInfoContainer> {
 }
 
 class CreateGroup extends StatefulWidget {
-  const CreateGroup({super.key});
+  final UserData userData;
+  const CreateGroup({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<CreateGroup> createState() => _CreateGroupState();
@@ -168,7 +170,7 @@ class _CreateGroupState extends State<CreateGroup> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProfilePage()),
+                          builder: (context) => ProfilePage(userData: widget.userData)),
                     );
                   },
                   child: Container(

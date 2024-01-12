@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 Future<User?> createUserWithEmailAndPassword(
@@ -25,6 +24,7 @@ Future<User?> createUserWithEmailAndPassword(
       print("Error: $error");
     }
   }
+  return null;
 }
 
 class ConnectedUser {

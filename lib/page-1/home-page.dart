@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/group-challenge.dart';
 import 'package:myapp/page-1/private-challenge.dart';
-import 'package:myapp/page-1/services.dart';
 
 void _showExitChallengeConfirmation(BuildContext context) {
   showDialog(
@@ -85,9 +85,14 @@ class CircularTextContainer extends StatelessWidget {
 }
 
 class Challenge extends StatelessWidget {
+  final UserData userData;
   final bool isGroup;
 
-  const Challenge({Key? key, required this.isGroup}) : super(key: key);
+ Challenge({
+    Key? key,
+    required this.userData,
+    this.isGroup = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +105,14 @@ class Challenge extends StatelessWidget {
           // Navigate to GroupChallengePage
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const GroupChallenge()),
+            MaterialPageRoute(builder: (context) => GroupChallenge(userData: userData)),
           );
+          
         } else {
           // Navigate to PrivateChallengePage
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PrivateChallenge()),
+            MaterialPageRoute(builder: (context) => PrivateChallenge(userData: userData)),
           );
         }
       },
@@ -199,7 +205,8 @@ class Challenge extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final UserData userData;
+  const HomePage({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -208,8 +215,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    print('Username: ${widget.userData.currentUser?.username}');
     return Scaffold(
-      body: Container(
+      body: Container(        
         width: 430,
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -217,10 +225,10 @@ class _HomePageState extends State<HomePage> {
             fit: BoxFit.fill,
           ),
         ),
-        child: const Column(
+        child: Column(
           children: [
-            SizedBox(height: 170),
-            Row(
+          const SizedBox(height: 170),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
@@ -240,25 +248,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Challenge(isGroup: false),
-                    Challenge(isGroup: true),
-                    Challenge(isGroup: true),
-                    Challenge(isGroup: true),
-                    Challenge(isGroup: true),
-                    Challenge(isGroup: true),
+                    Challenge(userData: widget.userData, isGroup: false),
+                    Challenge(userData: widget.userData, isGroup: true),
+                    Challenge(userData: widget.userData, isGroup: true),
+                    Challenge(userData: widget.userData, isGroup: true),
+                    Challenge(userData: widget.userData, isGroup: true),
+                    Challenge(userData: widget.userData, isGroup: true),
+                    
                   ],
                 ),
               ),
             ),
-            NavigationBar1(),
+            NavigationBar1(userData: widget.userData),
+            
           ],
         ),
       ),
     );
   }
+  
 }

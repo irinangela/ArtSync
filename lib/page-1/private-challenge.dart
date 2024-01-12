@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models.dart';
 
 class PrivateChallenge extends StatefulWidget {
-  const PrivateChallenge({Key? key}) : super(key: key);
+  final UserData userData;
+  const PrivateChallenge({Key? key, required this.userData}) : super(key: key);
   static const String text = "goodbye";
 
   @override

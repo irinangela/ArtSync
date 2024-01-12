@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/page-1/forgot-password.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
 import 'package:myapp/page-1/home-page.dart';
+import 'package:myapp/models.dart';
 
 class LoginPage2 extends StatefulWidget {
   const LoginPage2({Key? key}) : super(key: key);
@@ -40,23 +42,51 @@ class _LoginPage2State extends State<LoginPage2> {
   }
 
   Future<void> _signInWithEmailAndPassword(
-      String email, String password, BuildContext context) async {
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } on FirebaseAuthException catch (e) {
-      String errorMessage =
-          'Wrong email or password. Please try again.  If you do not have an account Sing Up below.';
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        errorMessage =
-            'Wrong email or password. Please try again. If you do not have an account Sing Up below.';
+    String email, String password, BuildContext context) async {
+  try {
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+    // Fetch the user data from Firestore
+    var user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
+
+      if (userSnapshot.exists) {
+        UserData userData = UserData();
+        // Update UserData with the user information
+        userData.setUser(UserInfoModel(
+          username: userSnapshot['username'],
+          email: userSnapshot['email'],
+          password: userSnapshot['password'],
+          QRcode: userSnapshot['QRcode'],
+          avatar: userSnapshot['avatar'],
+          points: userSnapshot['points'],
+          ChallengeDuration: userSnapshot['ChallengeDuration'],
+          PrivateChallengeID: userSnapshot['PrivateChallengeID'],
+        ));
+        print('UserData Filled:');
+        print('Username: ${userData.currentUser?.username}');
+        print('Challenge Duration: ${userData.currentUser?.ChallengeDuration}');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
+        );
       }
-      _showErrorDialog(context, errorMessage);
     }
+  } on FirebaseAuthException catch (e) {
+    String errorMessage =
+        'Wrong email or password. Please try again.  If you do not have an account Sing Up below.';
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      errorMessage =
+          'Wrong email or password. Please try again. If you do not have an account Sing Up below.';
+    }
+    _showErrorDialog(context, errorMessage);
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -205,13 +235,13 @@ class _LoginPage2State extends State<LoginPage2> {
                                       email = value;
                                     });
                                   },
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.symmetric(
                                         vertical: 13.0, horizontal: 10.0),
                                     hintText: 'E-mail',
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
                                     fontFamily: 'Inter',
@@ -244,13 +274,13 @@ class _LoginPage2State extends State<LoginPage2> {
                                     });
                                   },
                                   obscureText: true,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.symmetric(
                                         vertical: 13.0, horizontal: 10.0),
                                     hintText: 'Password',
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
                                     fontFamily: 'Inter',
@@ -279,10 +309,10 @@ class _LoginPage2State extends State<LoginPage2> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ForgotPassword()),
+                              builder: (context) => const ForgotPassword()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Forgot my password',
                         style: TextStyle(
                           color: Color(0xFF4A4646),
@@ -317,7 +347,7 @@ class _LoginPage2State extends State<LoginPage2> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -346,7 +376,7 @@ class _LoginPage2State extends State<LoginPage2> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 210,
                         height: 50,
                         child: Center(
@@ -370,10 +400,10 @@ class _LoginPage2State extends State<LoginPage2> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignUpPage()),
+                                    builder: (context) => const SignUpPage()),
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               'Sign Up',
                               style: TextStyle(
                                 color: Color(0xFFA965E3),
