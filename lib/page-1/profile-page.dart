@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
@@ -277,6 +278,61 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  List<Map<String, dynamic>> friendsList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFriendsData();
+  }
+
+  Future<void> fetchFriendsData() async {
+  try {
+    var currentUser = widget.userData.currentUser;
+
+    // Fetch friends data from Firestore based on the user's information
+    QuerySnapshot friendsSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: currentUser?.username)
+        .get();
+
+    if (friendsSnapshot.docs.isNotEmpty) {
+      // Extract the friends list from the snapshot
+      List<dynamic> friendsData = (friendsSnapshot.docs.first.data() as Map<String, dynamic>?)?['Friends'] ?? [];
+
+      // Ensure that friendsData is a list of strings
+      List<String> friendsUsernames = List<String>.from(friendsData);
+
+      // Iterate over the friends data and fetch additional information
+      for (var friendUsername in friendsUsernames) {
+      DocumentSnapshot friendSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: friendUsername)
+          .get()
+          .then((querySnapshot) => querySnapshot.docs.first);
+
+        // Extract avatar and other information from the friend's snapshot
+        String avatar = (friendSnapshot.data() as Map<String, dynamic>?)?['avatar'] as String? ?? '';
+
+        // Add the friend's data to the list
+        friendsList.add({
+          'username': friendUsername,
+          'avatar': avatar,
+          // Add more fields as needed
+        });
+      }
+
+      // Update the state to trigger a rebuild with the fetched data
+      setState(() {});
+    } else {
+      print('No documents found in friendsSnapshot');
+    }
+  } catch (e) {
+    print('Error fetching friends data: $e');
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     print('Username: ${widget.userData.currentUser?.username}');
@@ -300,7 +356,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Settings(userData: widget.userData)),
+                      MaterialPageRoute(builder: (context) => MySettings(userData: widget.userData)),
                     );
                   },
                   child: Container(
@@ -323,9 +379,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-                const CircularUserContainer(
-                  imagePath: 'assets/page-1/images/avatar2.png',
-                  username: 'Your Username',
+                CircularUserContainer(
+                  imagePath: widget.userData.currentUser?.avatar ?? 'assets/page-1/images/default_avatar.png',
+                  username: widget.userData.currentUser?.username ?? 'Your Username',
                   imageSize: 120.0, // Adjust as needed
                   fontSize: 18.0, // Adjust as needed
                 ),
@@ -381,60 +437,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            const SingleChildScrollView(
+            SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar2.png',
-                    username: 'Username1',
+                children: friendsList.map((friend) {
+                  return CircularUserContainer(
+                    imagePath: friend['avatar'] ?? '',
+                    username: friend['username'] ?? '',
                     imageSize: 90.0,
                     fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar3.png',
-                    username: 'Username2',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar4.png',
-                    username: 'Username3',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar5.png',
-                    username: 'Username4',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar6.png',
-                    username: 'Username5',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar7.png',
-                    username: 'Username6',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar8.png',
-                    username: 'Username7',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                  CircularUserContainer(
-                    imagePath: 'assets/page-1/images/avatar9.png',
-                    username: 'Username8',
-                    imageSize: 90.0,
-                    fontSize: 15.0,
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
             const Align(

@@ -172,15 +172,15 @@ class _AvatarUserState extends State<AvatarUser> {
   }
 }
 
-class Settings extends StatefulWidget {
+class MySettings extends StatefulWidget {
   final UserData userData;
-  const Settings({Key? key, required this.userData}) : super(key: key);
+  const MySettings({Key? key, required this.userData}) : super(key: key);
 
   @override
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsState extends State<MySettings> {
   late String selectedAvatar;
   late int selectedChallengeDuration;
 
