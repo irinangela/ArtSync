@@ -79,6 +79,7 @@ class _RatingPageState extends State<RatingPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.submissions);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -179,7 +180,7 @@ class _RatingPageState extends State<RatingPage> {
                   if (selectedImageIndex != -1) {
                     // Increment the rating in Firestore and update the local submissions list
                     await increaseRating(
-                      'your_group_id', // Replace with your group ID
+                      widget.groupId,
                       widget.submissions[selectedImageIndex]['username'],
                       widget.submissions,
                       selectedImageIndex,
