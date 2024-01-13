@@ -1,8 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
+import 'package:myapp/page-1/camera.dart';
 import 'package:myapp/page-1/rating-page.dart';
+import 'package:myapp/page-1/services.dart';
 
-void _showCenteredContainerWithImage(BuildContext context) {
+class MyImageContainer extends StatefulWidget {
+  const MyImageContainer({super.key});
+
+  @override
+  _MyImageContainerState createState() => _MyImageContainerState();
+}
+
+class _MyImageContainerState extends State<MyImageContainer> {
+  String currentImage = 'assets/page-1/images/bellbutton_notpushed.png';
+  bool imageChanged = false;
+
+  void changeImage() {
+    if (!imageChanged) {
+      setState(() {
+        // Change the image path only if it hasn't been changed before
+        currentImage = 'assets/page-1/images/bellbutton_pushed.png';
+        imageChanged = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: changeImage,
+      child: Container(
+        width: 35,
+        height: 35,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFFF1EAFF),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            currentImage,
+            width: 35,
+            height: 35,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void _showCenteredContainerWithImage(BuildContext context, String groupname) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -19,7 +66,7 @@ void _showCenteredContainerWithImage(BuildContext context) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Your image widget here
+              Text("$groupname QRcode:"),
               Image.asset(
                 'assets/page-1/images/QRcode.png',
                 width: 300,
@@ -41,11 +88,21 @@ void _showCenteredContainerWithImage(BuildContext context) {
   );
 }
 
-class AvatarChallenge extends StatelessWidget {
+class AvatarChallenge extends StatefulWidget {
   final String username;
+  final String avatar;
 
-  const AvatarChallenge({Key? key, required this.username}) : super(key: key);
+  const AvatarChallenge({
+    Key? key,
+    required this.username,
+    required this.avatar,
+  }) : super(key: key);
 
+  @override
+  State<AvatarChallenge> createState() => _AvatarChallengeState();
+}
+
+class _AvatarChallengeState extends State<AvatarChallenge> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -56,37 +113,21 @@ class AvatarChallenge extends StatelessWidget {
             Container(
               width: 120,
               height: 120,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue,
                 image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: AssetImage('assets/page-1/images/avatar1.png'),
+                  image: AssetImage(widget.avatar),
                 ),
               ),
             ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  print("acttion to user in challenge");
-                },
-                child: Container(
-                  width: 35,
-                  height: 35,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFF1EAFF),
-                  ),
-                ),
-              ),
-            ),
+            const Positioned(bottom: 0, right: 0, child: MyImageContainer()),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          '@$username',
+          '@${widget.username}',
           style: const TextStyle(color: Colors.black),
         ),
       ],
@@ -96,15 +137,46 @@ class AvatarChallenge extends StatelessWidget {
 
 class GroupChallenge extends StatefulWidget {
   final UserData userData;
-  const GroupChallenge({Key? key, required this.userData}) : super(key: key);
+  final Map<String, String> challengeInfo;
+
+  const GroupChallenge(
+      {Key? key, required this.userData, required this.challengeInfo})
+      : super(key: key);
 
   @override
   State<GroupChallenge> createState() => _GroupChallengeState();
 }
 
 class _GroupChallengeState extends State<GroupChallenge> {
+  List<Map<String, String>> members = [];
+  List<Map<String, dynamic>> submissions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    someFunction();
+  }
+
+  void someFunction() async {
+    String id = widget.challengeInfo['groupId']!;
+    members = await getGroupMembers(id);
+    submissions = await getSubmissions(id);
+
+    // This will trigger a rebuild with the updated members list
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(submissions);
+
+    List<Map<String, dynamic>> membersNotMe =
+        removeUserFromList(members, widget.userData.currentUser?.username);
+
+    print(membersNotMe);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -124,11 +196,11 @@ class _GroupChallengeState extends State<GroupChallenge> {
             const SizedBox(
               height: 70,
             ),
-            const Text.rich(
+            Text.rich(
               textAlign: TextAlign.start,
               TextSpan(
                 children: [
-                  TextSpan(
+                  const TextSpan(
                     text: 'Group: ',
                     style: TextStyle(
                       color: Color(0xFFA75FE3),
@@ -140,8 +212,8 @@ class _GroupChallengeState extends State<GroupChallenge> {
                     ),
                   ),
                   TextSpan(
-                    text: ' Group name',
-                    style: TextStyle(
+                    text: widget.challengeInfo['groupName']!,
+                    style: const TextStyle(
                       color: Color(0xFFA75FE3),
                       fontSize: 20,
                       fontFamily: 'Inter',
@@ -159,11 +231,11 @@ class _GroupChallengeState extends State<GroupChallenge> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Group challenge Title',
+                    widget.challengeInfo['title']!,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 30,
                       fontFamily: 'Inter',
@@ -175,14 +247,13 @@ class _GroupChallengeState extends State<GroupChallenge> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    _showCenteredContainerWithImage(context);
+                    _showCenteredContainerWithImage(
+                        context, widget.challengeInfo['groupName']!);
                   },
-                  child: Container(
-                    child: Image.asset(
-                      'assets/page-1/images/QRbutton.png',
-                      width: 50,
-                      height: 50,
-                    ),
+                  child: Image.asset(
+                    'assets/page-1/images/QRbutton.png',
+                    width: 50,
+                    height: 50,
                   ),
                 ),
                 const SizedBox(width: 15),
@@ -216,16 +287,16 @@ class _GroupChallengeState extends State<GroupChallenge> {
                   )
                 ],
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
-                      'Here will be the description of the group challenge',
+                      widget.challengeInfo['description']!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 50, 35, 35),
                         fontSize: 20,
                         fontFamily: 'Inter',
@@ -251,6 +322,23 @@ class _GroupChallengeState extends State<GroupChallenge> {
             ),
             const SizedBox(height: 20),
             Expanded(
+              child: SingleChildScrollView(
+                  child: Column(
+                children: [
+                  for (int i = 0; i < membersNotMe.length; i++)
+                    Column(
+                      children: [
+                        AvatarChallenge(
+                          username: membersNotMe[i]['username']!,
+                          avatar: membersNotMe[i]['avatar']!,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                ],
+              )),
+            ),
+            /* Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 scrollDirection: Axis.vertical,
@@ -268,23 +356,52 @@ class _GroupChallengeState extends State<GroupChallenge> {
                   );
                 },
               ),
-            ),
+            ),*/
             const SizedBox(height: 8),
-            //const SizedBox(height: 25),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const SizedBox(width: 60),
+                // Submission button
+
                 GestureDetector(
                   onTap: () {
-                    /*
-                Navigator.push(
-                  
+                    submitData(
+                        context,
+                        widget.challengeInfo['groupId']!,
+                        widget.userData.currentUser!.username,
+                        'assets/page1/images/sky1.png',
+                        submissions);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5D4FF),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(
+                        color: Color(0xFFA75FE3),
+                        fontSize: 24,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                        height: 0,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // camera button
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CameraApp()),
-                 
-                    ); */
+                      MaterialPageRoute(
+                          builder: (context) => const CameraApp()),
+                    );
                   },
                   child: Container(
                     decoration: const BoxDecoration(
@@ -298,34 +415,60 @@ class _GroupChallengeState extends State<GroupChallenge> {
                   ),
                 ),
 
+                //rate button
+
                 GestureDetector(
-                    onTap: () {
+                  onTap: () async {
+                    List<String> usersReadyToSubmit =
+                        readyToSubmit(submissions);
+                    if (usersReadyToSubmit.length == members.length) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RatingPage(userData: widget.userData)),
+                            builder: (context) =>
+                                RatingPage(userData: widget.userData)),
                       );
-                    },
-                    child: Container(
-                      //margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5D4FF),
-                        borderRadius: BorderRadius.circular(25.0),
+                    } else {
+                      // Show a pop-up message indicating that not enough users are ready
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Not Enough Users Ready'),
+                            content: const Text(
+                                'All the members of the group should have committed in order for you to rate!'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5D4FF),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: const Text(
+                      "Rate",
+                      style: TextStyle(
+                        color: Color(0xFFA75FE3),
+                        fontSize: 24,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                        height: 0,
+                        decoration: TextDecoration.none,
                       ),
-                      child: const Text(
-                        "Rate",
-                        style: TextStyle(
-                          color: Color(0xFFA75FE3),
-                          fontSize: 24,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    )),
-                //const SizedBox(width: 20),
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),

@@ -5,6 +5,7 @@ import 'package:myapp/page-1/group-challenge.dart';
 import 'package:myapp/page-1/private-challenge.dart';
 import 'package:myapp/page-1/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'dart:async';
 
 void _showExitChallengeConfirmation(BuildContext context) {
   showDialog(
@@ -97,6 +98,7 @@ class _PointsState extends State<Points> {
 
 class Challenge extends StatefulWidget {
   UserData userData;
+  final Map<String, String> challengeInfo;
   bool isGroup;
   String challengeTitle;
   String duration;
@@ -105,6 +107,7 @@ class Challenge extends StatefulWidget {
   Challenge({
     Key? key,
     required this.userData,
+    this.challengeInfo = const {},
     this.isGroup = false,
     this.challengeTitle = '',
     this.groupName = '',
@@ -116,6 +119,42 @@ class Challenge extends StatefulWidget {
 }
 
 class _ChallengeState extends State<Challenge> {
+  late Timer _timer;
+  late Duration _remainingTime;
+
+  @override
+  void initState() {
+    super.initState();
+    // Convert the string duration to a Duration object
+    _remainingTime = Duration(days: int.parse(widget.duration));
+    // Start the countdown timer
+    _timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
+  }
+
+  void _updateTimer(Timer timer) {
+    setState(() {
+      if (_remainingTime.inSeconds > 0) {
+        _remainingTime = _remainingTime - const Duration(seconds: 1);
+      } else {
+        _timer.cancel(); // Stop the timer when the countdown reaches zero
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer to avoid memory leaks
+    super.dispose();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String days = twoDigits(duration.inDays);
+    String hours = twoDigits(duration.inHours.remainder(24));
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    return '$days d $hours h $minutes min';
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -128,16 +167,22 @@ class _ChallengeState extends State<Challenge> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    GroupChallenge(userData: widget.userData)),
+              builder: (context) => GroupChallenge(
+                userData: widget.userData,
+                challengeInfo: widget.challengeInfo,
+              ),
+            ),
           );
         } else {
           // Navigate to PrivateChallengePage
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    PrivateChallenge(userData: widget.userData)),
+              builder: (context) => PrivateChallenge(
+                userData: widget.userData,
+                privchallengeInfo: widget.challengeInfo,
+              ),
+            ),
           );
         }
       },
@@ -194,7 +239,8 @@ class _ChallengeState extends State<Challenge> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          widget.duration,
+                          _formatDuration(_remainingTime),
+                          // Display the formatted countdown timer
                           style: const TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
@@ -210,7 +256,8 @@ class _ChallengeState extends State<Challenge> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        widget.duration,
+                        _formatDuration(_remainingTime),
+                        // Display the formatted countdown timer
                         style: const TextStyle(
                           color: Color(0xFFD0A2F7),
                           fontSize: 20,
@@ -261,7 +308,7 @@ class _HomePageState extends State<HomePage> {
     print('Username: ${widget.userData.currentUser?.username}');
 
     if (isLoading) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -290,12 +337,12 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 170),
+            const SizedBox(height: 170),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  (widget.userData.currentUser?.points ?? 0) < 50
+                  (widget.userData.currentUser?.points ?? 0) < 100
                       ? 'Level: Beginner'
                       : (widget.userData.currentUser?.points ?? 0) <= 200
                           ? 'Level: Intermediate'
@@ -311,7 +358,7 @@ class _HomePageState extends State<HomePage> {
                 Points(
                   number: '${widget.userData.currentUser?.points}',
                   points: 'points',
-                  containerColor: Color(0xFFE5D4FF),
+                  containerColor: const Color(0xFFE5D4FF),
                 ),
               ],
             ),
@@ -320,13 +367,13 @@ class _HomePageState extends State<HomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const SizedBox(width: 15),
-                        const Text(
+                        SizedBox(width: 15),
+                        Text(
                           "Your private challenge:",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
                             fontFamily: 'Inter',
@@ -342,14 +389,15 @@ class _HomePageState extends State<HomePage> {
                       duration: privchallengeInfo['duration'] ?? '',
                       groupName: privchallengeInfo['groupName'] ?? '',
                       challengeTitle: privchallengeInfo['title'] ?? '',
+                      challengeInfo: privchallengeInfo,
                     ),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const SizedBox(width: 15),
-                        const Text(
+                        SizedBox(width: 15),
+                        Text(
                           "Your group challenges:",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
                             fontFamily: 'Inter',
@@ -366,6 +414,7 @@ class _HomePageState extends State<HomePage> {
                         duration: challengeInfo[i]['duration'] ?? '',
                         groupName: challengeInfo[i]['groupName'] ?? '',
                         challengeTitle: challengeInfo[i]['title'] ?? '',
+                        challengeInfo: challengeInfo[i],
                       ),
                   ],
                 ),

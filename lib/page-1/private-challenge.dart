@@ -3,7 +3,11 @@ import 'package:myapp/models.dart';
 
 class PrivateChallenge extends StatefulWidget {
   final UserData userData;
-  const PrivateChallenge({Key? key, required this.userData}) : super(key: key);
+  final Map<String, String> privchallengeInfo;
+
+  PrivateChallenge(
+      {Key? key, required this.userData, required this.privchallengeInfo})
+      : super(key: key);
   static const String text = "goodbye";
 
   @override
@@ -13,6 +17,8 @@ class PrivateChallenge extends StatefulWidget {
 class _PrivateChallengeState extends State<PrivateChallenge> {
   @override
   Widget build(BuildContext context) {
+    print('Username: ${widget.userData.currentUser?.username}');
+    print('Title: ${widget.privchallengeInfo['title']}');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -74,9 +80,9 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
             const SizedBox(
               height: 10,
             ),
-            const Text(
-              'Private challenge Title',
-              style: TextStyle(
+            Text(
+              widget.privchallengeInfo['title']!,
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 30,
                 fontFamily: 'Inter',
@@ -121,16 +127,16 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
                   )
                 ],
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
-                      'Here will be the description of the private challenge',
+                      widget.privchallengeInfo['description']!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
                         fontFamily: 'Inter',
@@ -146,8 +152,13 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                print("camera is open now");
-              }, //open camera
+                /*Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CameraApp(),
+                  ),
+                );*/
+              },
               child: Container(
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
@@ -156,8 +167,8 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
                     height: 80, width: 80),
               ),
             ),
-            //large sizedbox here so that we x=can have the rest on the bottom screen
-            const SizedBox(height: 180),
+            //large sizedbox here so that we can have the rest on the bottom screen
+            const SizedBox(height: 150),
             const Text(
               'Remember!',
               textAlign: TextAlign.center,
@@ -177,7 +188,7 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 80, // Adjust the height as needed
+                    height: 80,
                     child: Text(
                       'The more Private Challenges you complete, the more points you will get.',
                       textAlign: TextAlign.center,
@@ -193,7 +204,7 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
                     ),
                   ),
                   SizedBox(
-                    height: 80, // Adjust the height as needed
+                    height: 80,
                     child: Text(
                       'Challenge yourself!',
                       textAlign: TextAlign.center,

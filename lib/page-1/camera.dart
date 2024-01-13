@@ -1,5 +1,7 @@
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-/*
 class CameraApp extends StatefulWidget {
   const CameraApp({Key? key}) : super(key: key);
 
@@ -49,11 +51,10 @@ class _CameraAppState extends State<CameraApp> {
     } else {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(), // Show a loading indicator while camera initializes
+          child:
+              CircularProgressIndicator(), // Show a loading indicator while camera initializes
         ),
       );
     }
   }
 }
-
-*/

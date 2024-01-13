@@ -81,7 +81,6 @@ flutter:
     - assets/page-1/images/Background2.png
     - assets/page-1/images/Background3.png
     - assets/page-1/images/Background4.png
-    - assets/page-1/images/BellButton.png
     - assets/page-1/images/check.png
     - assets/page-1/images/CheckButton.png
     - assets/page-1/images/ControlMenu_Profile.png
@@ -139,6 +138,8 @@ flutter:
     - assets/page-1/images/UpArrow.png
     - assets/page-1/images/DownArrow.png
     - assets/page-1/images/NewGroup.png
+    - assets/page-1/images/bellbutton_pushed.png
+    - assets/page-1/images/bellbutton_notpushed.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
