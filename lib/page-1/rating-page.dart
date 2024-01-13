@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/results-page.dart';
+import 'package:myapp/page-1/services.dart';
 
 class ImageContainer extends StatefulWidget {
   final String imagePath;
+  final Function(bool isTapped) onTapped;
 
-  const ImageContainer({Key? key, required this.imagePath}) : super(key: key);
+  const ImageContainer(
+      {Key? key, required this.imagePath, required this.onTapped})
+      : super(key: key);
 
   @override
   _ImageContainerState createState() => _ImageContainerState();
@@ -20,6 +24,7 @@ class _ImageContainerState extends State<ImageContainer> {
       onDoubleTap: () {
         setState(() {
           isTapped = !isTapped;
+          widget.onTapped(isTapped);
         });
       },
       child: Container(
@@ -56,13 +61,22 @@ class _ImageContainerState extends State<ImageContainer> {
 
 class RatingPage extends StatefulWidget {
   final UserData userData;
-  const RatingPage({Key? key, required this.userData}) : super(key: key);
+  final List<Map<String, dynamic>> submissions;
+  final String groupId;
+  const RatingPage(
+      {Key? key,
+      required this.userData,
+      required this.submissions,
+      required this.groupId})
+      : super(key: key);
 
   @override
   State<RatingPage> createState() => _RatingPageState();
 }
 
 class _RatingPageState extends State<RatingPage> {
+  int selectedImageIndex = -1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,19 +125,26 @@ class _RatingPageState extends State<RatingPage> {
               height: 540, // Fixed height for scrolling
               child: PageView(
                 scrollDirection: Axis.horizontal,
-                children: const [
-                  ImageContainer(
-                    imagePath: 'assets/page-1/images/sky1.png',
-                  ),
-                  ImageContainer(
-                    imagePath: 'assets/page-1/images/sky2.png',
-                  ),
-                  ImageContainer(
-                    imagePath: 'assets/page-1/images/sky3.png',
-                  ),
-                  ImageContainer(
-                    imagePath: 'assets/page-1/images/sky4.png',
-                  ),
+                onPageChanged: (index) {
+                  setState(() {
+                    selectedImageIndex = index;
+                  });
+                },
+                children: [
+                  for (int i = 0; i < widget.submissions.length; i++)
+                    ImageContainer(
+                      imagePath: widget.submissions[i]['photo'],
+                      onTapped: (isTapped) {
+                        // Update the selected image index
+                        setState(() {
+                          if (isTapped) {
+                            selectedImageIndex = i;
+                          } else {
+                            selectedImageIndex = -1;
+                          }
+                        });
+                      },
+                    ),
                 ],
               ),
             ),
@@ -154,10 +175,45 @@ class _RatingPageState extends State<RatingPage> {
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  if (selectedImageIndex != -1) {
+                    // Increment the rating in Firestore and update the local submissions list
+                    await increaseRating(
+                      'your_group_id', // Replace with your group ID
+                      widget.submissions[selectedImageIndex]['username'],
+                      widget.submissions,
+                      selectedImageIndex,
+                      context,
+                    );
+                  } else {
+                    // Show a dialog if no image is selected
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('No Image Selected'),
+                          content: const Text(
+                              'Please pick your favorite picture first.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    return; // Return to avoid navigating to Results when no image is selected
+                  }
+
+                  // Navigate to Results page
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Results(userData: widget.userData)),
+                    MaterialPageRoute(
+                      builder: (context) => Results(userData: widget.userData),
+                    ),
                   );
                 },
                 child: Container(

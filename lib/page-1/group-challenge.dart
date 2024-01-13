@@ -370,7 +370,7 @@ class _GroupChallengeState extends State<GroupChallenge> {
                         context,
                         widget.challengeInfo['groupId']!,
                         widget.userData.currentUser!.username,
-                        'assets/page1/images/sky1.png',
+                        'assets/page-1/images/sky1.png',
                         submissions);
                   },
                   child: Container(
@@ -425,8 +425,10 @@ class _GroupChallengeState extends State<GroupChallenge> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                RatingPage(userData: widget.userData)),
+                            builder: (context) => RatingPage(
+                                userData: widget.userData,
+                                submissions: submissions,
+                                groupId: widget.challengeInfo['groupId']!)),
                       );
                     } else {
                       // Show a pop-up message indicating that not enough users are ready

@@ -185,7 +185,7 @@ Future<List<Map<String, dynamic>>> getSubmissions(String groupId) async {
         }
 
         if (rating is! String) {
-          rating = rating.toString();
+          rating = rating;
         }
 
         submissionsList.add({
@@ -283,6 +283,46 @@ void submitData(
       );
     } else {
       print('Username not found in Submissions data.');
+    }
+  } catch (error) {
+    print('Error updating Firestore: $error');
+  }
+}
+
+Future<void> increaseRating(
+    String groupId,
+    String username,
+    List<Map<String, dynamic>> submissions,
+    int selectedImageIndex,
+    BuildContext context) async {
+  try {
+    // Reference to the document in the "Groups" collection
+    DocumentReference groupDocRef =
+        FirebaseFirestore.instance.collection('Groups').doc(groupId);
+
+    // Fetch the current data in the document
+    DocumentSnapshot groupDoc = await groupDocRef.get();
+    Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+
+    // Fetch the "Submissions" map
+    Map<String, dynamic> submissionsMap = groupData['Submissions'];
+
+    // Check if the username exists in the map
+    if (submissionsMap.containsKey(username)) {
+      // Increment the "Rating" field for the specified username
+      submissionsMap[username]['Rating'] =
+          (submissionsMap[username]['Rating'] ?? 0) + 1;
+
+      // Update the document in the "Groups" collection
+      await groupDocRef.update({'Submissions': submissionsMap});
+
+      // Update the rating in the local submissions list
+      if (selectedImageIndex != -1) {
+        submissions[selectedImageIndex]['rating'] =
+            (submissions[selectedImageIndex]['rating'] ?? 0) + 1;
+      }
+    } else {
+      print('Username not found in Submissions map.');
     }
   } catch (error) {
     print('Error updating Firestore: $error');
