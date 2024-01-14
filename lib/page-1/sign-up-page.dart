@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/page-1/choose-an-avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/page-1/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -15,6 +16,20 @@ class _SignUpPageState extends State<SignUpPage> {
   String email = '';
   String username = '';
   String password = '';
+
+  Future<bool> isUsernameAvailable(String username) async {
+    try {
+      QuerySnapshot query = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: username)
+          .get();
+
+      return query.docs.isEmpty;
+    } catch (error) {
+      print("Error checking username availability: $error");
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,45 +119,45 @@ class _SignUpPageState extends State<SignUpPage> {
               width: 120,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formkey.currentState!.validate()) {
-                    // Form is valid, proceed with creating the user
-                    createUserWithEmailAndPassword(email, password)
-                        .then((User? user) {
-                      if (user != null) {
-                        /*
-                        UserInfo userInfo = UserInfo(
-                          username: username,
-                          email: email,
-                          password: password,
-                          QRcode: 'assets/page-1/images/QRcode.png',
-                          //avatar: 'assets/page-1/images/avatar3.png',
-                          points: 0,
-                          challengeDuration: 5,
-                          privateChallengeID: 1,
-                        );
-                        UserData.setUser(userInfo);
-                        */
-                        // Navigate to the next page or perform any other actions
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChooseAvatar(
-                              user: user,
-                              email: email,
-                              username: username,
-                              password: password,
+                    // Check if the username is available
+                    bool isAvailable = await isUsernameAvailable(username);
+
+                    if (!isAvailable) {
+                      // Username is not available, show a warning to the user
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('The username is not available. Please choose another one.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else {
+                      // Username is available, proceed with user creation
+                      try {
+                        User? user = await createUserWithEmailAndPassword(email, password);
+
+                        if (user != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChooseAvatar(
+                                user: user,
+                                email: email,
+                                username: username,
+                                password: password,
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        // Handle error
-                        print("Error creating user");
+                          );
+                        } else {
+                          // Handle error
+                          print("Error creating user");
+                        }
+                      } catch (error) {
+                        // Handle errors if needed
+                        print("Error creating user: $error");
                       }
-                    }).catchError((error) {
-                      // Handle errors if needed
-                      print("Error creating user: $error");
-                    });
+                    }
                   }
                 },
                 child: const Text('Continue', style: TextStyle(fontSize: 20)),

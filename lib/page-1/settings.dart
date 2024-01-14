@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/page-1/profile-page.dart';
 import 'package:myapp/models.dart';
@@ -184,6 +185,21 @@ class _SettingsState extends State<MySettings> {
   late String selectedAvatar;
   late int selectedChallengeDuration;
   late TextEditingController usernameController;
+  bool isUsernameAvailableFlag = true;
+
+  Future<bool> isUsernameAvailable(String username) async {
+  try {
+    QuerySnapshot query = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: username)
+        .get();
+
+    return query.docs.isEmpty;
+  } catch (error) {
+    print("Error checking username availability: $error");
+    return false;
+  }
+}
 
   @override
   void initState() {
@@ -393,18 +409,38 @@ class _SettingsState extends State<MySettings> {
               height: 50,
               child: SubmitButton(
                 onPressed: () async {
-                  // Get the user data from the provider
                   UserData userData =
                       Provider.of<UserData>(context, listen: false);
-                  // Update the challenge duration in Firestore
-                  final newUsername = usernameController.text;
+                 
                   await userData.updateChallengeDurationInFirestore(
                       widget.userData, selectedChallengeDuration);
                   await userData.updateAvatarInFirestore(
                       widget.userData, selectedAvatar);
-                  await userData.updateUsernameInFirestore(
-                      widget.userData, newUsername);
-                  // Navigate to the profile page or perform other actions
+
+                  final newUsername = usernameController.text;
+                  if (newUsername.isNotEmpty) {
+                    bool isAvailable = await isUsernameAvailable(newUsername);
+                    if(isAvailable) {
+                      await userData.updateUsernameInFirestore(
+                          widget.userData, newUsername);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProfilePage(userData: widget.userData),
+                          ),
+                        );
+                    }
+                    else{
+                      // Username is not available, show a warning to the user
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('The username is not available. Please choose another one.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -412,6 +448,7 @@ class _SettingsState extends State<MySettings> {
                           ProfilePage(userData: widget.userData),
                     ),
                   );
+                  }
                 },
                 text: 'Save Changes',
                 fontSize: 20,
