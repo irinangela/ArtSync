@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserInfoModel {
   String username;
@@ -184,4 +183,75 @@ class UserData extends ChangeNotifier {
       }
     }
   }
+
+  Future<String> fetchWinnerAvatar(String winnerUsername) async {
+    String winnerAvatar = '';
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: winnerUsername)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        winnerAvatar = querySnapshot.docs.first['avatar'] ?? '';
+      } else {
+        print('User not found in Firestore');
+      }
+    } catch (e) {
+      print('Error querying Firestore: $e');
+    }
+    return winnerAvatar;
+  }
+
+  bool pointsUpdated = false;
+  Future<void> updatePointsForCurrentUser(List<String> winners) async {
+  if (_currentUser != null && !pointsUpdated) {
+    try {
+      bool isCurrentUserWinner =
+          winners.contains(_currentUser?.username);
+
+      if (isCurrentUserWinner) {
+        var querySnapshot = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('username', isEqualTo: _currentUser?.username)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          var userDocument = querySnapshot.docs.first;
+          int position = winners.indexOf(_currentUser!.username) + 1;
+          int pointsEarned = 0;
+
+          switch (position) {
+            case 1:
+              pointsEarned = 50;
+              break;
+            case 2:
+              pointsEarned = 25;
+              break;
+            case 3:
+              pointsEarned = 10;
+              break;
+            default:
+              break;
+          }
+
+          // Update points in Firestore
+          await userDocument.reference.update({
+            'points': FieldValue.increment(pointsEarned),
+          });
+
+          // Update points in the local state
+          _currentUser?.points += pointsEarned;
+          notifyListeners();
+          pointsUpdated = true;
+        } else {
+          print('User document not found in Firestore');
+        }
+      }
+    } catch (e) {
+      print('Error updating points for current user: $e');
+    }
+  }
+}
+
 }

@@ -173,6 +173,7 @@ class _RatingPageState extends State<RatingPage> {
                 ),
               ],
             ),
+            
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
@@ -208,12 +209,16 @@ class _RatingPageState extends State<RatingPage> {
                     );
                     return; // Return to avoid navigating to Results when no image is selected
                   }
-
                   // Navigate to Results page
+                  // ignore: use_build_context_synchronously
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Results(userData: widget.userData),
+                      builder: (context) => Results(
+                        userData: widget.userData,
+                        submissions: widget.submissions,
+                        groupId: widget.groupId,
+                      ),
                     ),
                   );
                 },
