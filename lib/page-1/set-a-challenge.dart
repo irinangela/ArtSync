@@ -5,7 +5,9 @@ import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/camera.dart';
 
 class DropDown extends StatefulWidget {
-  const DropDown({super.key});
+  final Function(String) onDurationSelected;
+
+  const DropDown({Key? key, required this.onDurationSelected}) : super(key: key);
 
   @override
   _DropDownState createState() => _DropDownState();
@@ -40,9 +42,7 @@ class _DropDownState extends State<DropDown> {
                   style: const TextStyle(fontSize: 18),
                 ),
                 Icon(
-                  isDropdownOpen
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
+                  isDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                 ),
               ],
             ),
@@ -76,6 +76,7 @@ class _DropDownState extends State<DropDown> {
       onTap: () {
         setState(() {
           dropdownValue = item;
+          widget.onDurationSelected(item); // Notify the parent widget about the selected duration
           isDropdownOpen = false;
         });
       },
@@ -124,22 +125,31 @@ class Background2 extends StatelessWidget {
 
 class SetChallenge extends StatelessWidget {
   final UserData userData;
-  SetChallenge({Key? key, required this.userData}) : super(key: key);
+  final String groupId;
+
+  SetChallenge({
+    Key? key,
+    required this.userData,
+    required this.groupId,
+  }) : super(key: key);
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  late String selectedDuration;
 
   @override
   Widget build(BuildContext context) {
+    print(groupId);
     return Scaffold(
-        body: Stack(
+      resizeToAvoidBottomInset: false,
+      body: Stack(
       children: [
         const Positioned.fill(
           child: Background2(),
         ),
         Positioned.fill(
-            child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -300,14 +310,22 @@ class SetChallenge extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Center(
-                  child: DropDown(), // Use the DropDown widget here
+                Center(
+                  child: DropDown(onDurationSelected: (duration) {
+                  selectedDuration = duration; 
+                })
                 ),
                 const SizedBox(height: 20),
+                
               ],
+              
             ),
+            
           ),
-        )),
+          
+        )
+        
+        ),
         Positioned(
           bottom: 20,
           left: 250,
@@ -320,18 +338,25 @@ class SetChallenge extends StatelessWidget {
                 String title = titleController.text;
                 String description = descriptionController.text;
                 if (title.isNotEmpty && description.isNotEmpty) {
-                  await FirebaseFirestore.instance
-                      .collection('Challenges')
-                      .add({
-                    'Title': title,
-                    'Description': description,
-                  });
-                  print("doooooooooooooooooooooooone");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HomePage(userData: userData)),
-                  );
+                    DocumentReference challengeDocRef =
+                        await FirebaseFirestore.instance.collection('Challenges').add({
+                      'Title': title,
+                      'Description': description,
+                    });
+                    String challengeId = challengeDocRef.id;
+
+                    await FirebaseFirestore.instance.collection('Groups').doc(groupId).update({
+                      'ChallengeID': challengeId,
+                      'Duration': getDurationValue(selectedDuration),
+                    });
+
+                   userData.updateSubmissionsID(groupId);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(userData: userData)),
+                    );
                 } else {
                   // Show an error message or handle the case where title or description is empty
                   print('Title and description cannot be empty.');
@@ -342,7 +367,29 @@ class SetChallenge extends StatelessWidget {
             ),
           ),
         ),
-      ],
-    ));
+        
+      ],    
+        )
+    
+    );
   }
+
+  int getDurationValue(String item) {
+    switch (item) {
+      case '1 day':
+        return 1;
+      case '5 days':
+        return 5;
+      case '1 week':
+        return 7;
+      case '2 weeks':
+        return 14;
+      case '1 month':
+        return 30;
+      default:
+        return 5;
+    }
+  }
+
+
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
+import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/set-a-challenge.dart';
 
 class Background4 extends StatelessWidget {
@@ -46,10 +47,42 @@ class SubmitButton extends StatelessWidget {
 
 class Results extends StatelessWidget {
   final UserData userData;
-  const Results({Key? key, required this.userData}) : super(key: key);
+  final List<Map<String, dynamic>> submissions;
+  final String groupId;
+
+  const Results({
+    Key? key,
+    required this.userData,
+    required this.submissions,
+    required this.groupId,
+  }) : super(key: key);
+
+  List<String> findWinners(List<Map<String, dynamic>> submissions) {
+    List<String> winners = [];
+
+    // Sort submissions by rating in descending order
+    submissions.sort((a, b) => (b['rating'] ?? 0).compareTo(a['rating'] ?? 0));
+
+    // Extract usernames of the top three winners
+    for (int i = 0; i < 3 && i < submissions.length; i++) {
+      winners.add(submissions[i]['username'] ?? '');
+    }
+
+    return winners;
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<String> winners = findWinners(submissions);
+    String winnerUsername = winners.isNotEmpty ? winners.first : '';
+    bool isCurrentUserWinner = winners.contains(userData.currentUser?.username);
+
+    return FutureBuilder<String>(
+      future: userData.fetchWinnerAvatar(winnerUsername),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          String winnerAvatar = snapshot.data ?? '';
+
     return Scaffold(
       body: Stack(
         children: [
@@ -104,24 +137,24 @@ class Results extends StatelessWidget {
                         Container(
                           width: 100,
                           height: 100,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage('assets/page-1/images/avatar2.png'),
+                              image: AssetImage(winnerAvatar),
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
                         const SizedBox(width: 5),
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '@username1',
-                              style: TextStyle(fontSize: 24),
+                              '@${winners[0]}', 
+                              style: const TextStyle(fontSize: 24),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                           ],
                         ),
                       ],
@@ -155,8 +188,8 @@ class Results extends StatelessWidget {
                               border: const TableBorder(
                                 verticalInside: BorderSide(width: 1, color: Color(0xFFA75FE3)), 
                               ),
-                            children: const [
-                              TableRow(
+                            children: [
+                              const TableRow(
                                 children: [
                                   TableCell(
                                     child: Padding(
@@ -184,13 +217,13 @@ class Results extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('1st: @username1',
-                                          style: TextStyle(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('1st: @${winners[0]}',
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           )),
                                   )),
-                                  TableCell(child: Center(child: Padding(
+                                  const TableCell(child: Center(child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text('+50pnts',
                                           style: TextStyle(
@@ -202,13 +235,13 @@ class Results extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('2nd: @username2',
-                                          style: TextStyle(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('2nd: @${winners[1]}',
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           )),
                                   )),
-                                  TableCell(child: Center(child: Padding(
+                                  const TableCell(child: Center(child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text('+25pnts',
                                           style: TextStyle(
@@ -220,13 +253,13 @@ class Results extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('3rd: @username3',
-                                          style: TextStyle(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('3rd: @${winners[2]}',
+                                          style: const TextStyle(
                                             fontSize: 18,
                                           )),
                                   )),
-                                  TableCell(child: Center(child: Padding(
+                                  const TableCell(child: Center(child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child:Text('+10pnts',
                                           style: TextStyle(
@@ -247,15 +280,46 @@ class Results extends StatelessWidget {
           ),
           Positioned(
             top: 750,
+            left: 30,
+            child: SizedBox(
+              width: 160,
+              height: 50,
+              child: SubmitButton(
+                onPressed: () async {
+                  if (isCurrentUserWinner) {
+                    // Update points for the current user in Firestore
+                    await userData.updatePointsForCurrentUser(winners);
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
+                  );
+                },
+                text: 'Back',
+                fontSize: 20,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 750,
             left: 220,
             child: SizedBox(
                 width: 160,
                 height: 50,
               child: SubmitButton(
-                onPressed: () { 
+                onPressed: () async { 
+                  if (isCurrentUserWinner) {
+                    // Update points for the current user in Firestore
+                    await userData.updatePointsForCurrentUser(winners);
+                  }
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SetChallenge(userData: userData)),
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SetChallenge(
+                        userData: userData,
+                        groupId: groupId,
+                      ),
+                    ),
                   );
                 },
                 text: 'Create New',
@@ -266,5 +330,10 @@ class Results extends StatelessWidget {
         ],
       ),
     );
-  }
+    } else {
+          // Handle loading or other states
+          return const CircularProgressIndicator(); // You can replace this with a loading indicator or other UI.
+    }
+  });
+}
 }
