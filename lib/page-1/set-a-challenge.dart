@@ -141,14 +141,15 @@ class SetChallenge extends StatelessWidget {
   Widget build(BuildContext context) {
     print(groupId);
     return Scaffold(
-        body: Stack(
+      resizeToAvoidBottomInset: false,
+      body: Stack(
       children: [
         const Positioned.fill(
           child: Background2(),
         ),
         Positioned.fill(
-            child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -348,6 +349,8 @@ class SetChallenge extends StatelessWidget {
                       'ChallengeID': challengeId,
                       'Duration': getDurationValue(selectedDuration),
                     });
+
+                   userData.updateSubmissionsID(groupId);
 
                     Navigator.push(
                       context,

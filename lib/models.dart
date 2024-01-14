@@ -254,4 +254,42 @@ class UserData extends ChangeNotifier {
   }
 }
 
+Future<void> updateSubmissionsID(String groupId) async {
+  try {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+        .collection('Groups')
+        .doc(groupId)
+        .get();
+
+    Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+
+    if (groupData.containsKey('Submissions')) {
+      Map<String, dynamic> submissionsMap = groupData['Submissions'];
+
+      submissionsMap.forEach((username, submissionData) {
+        if (submissionData is Map<String, dynamic>) {
+          // Set 'Rating' field to 0 if it exists
+          submissionData['Rating'] = 0;
+
+          // Set 'PhotoURL' field to '0' if it exists
+          submissionData['PhotoURL'] = '0';
+        }
+      });
+
+      // Now, update the document with the modified submissionsMap
+      await FirebaseFirestore.instance
+          .collection('Groups')
+          .doc(groupId)
+          .update({'Submissions': submissionsMap});
+    } else {
+      print(
+          'Submissions field not found in the document with groupId: $groupId');
+    }
+  } catch (error) {
+    print('Error fetching or updating submissions: $error');
+  }
+}
+
+
+
 }
