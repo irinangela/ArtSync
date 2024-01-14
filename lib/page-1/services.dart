@@ -328,3 +328,120 @@ Future<void> increaseRating(
     print('Error updating Firestore: $error');
   }
 }
+
+Future<List<Map<String, dynamic>>> findAllGroupInfo(String username) async {
+  List<Map<String, dynamic>> groupInfoList = [];
+
+  try {
+    // Fetch the user document from the Users collection
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get()
+        .then((QuerySnapshot querySnapshot) => querySnapshot.docs.first);
+
+    // Check if the user document exists
+    if (userSnapshot.exists) {
+      List<dynamic> groupIDs = userSnapshot['groupID'];
+
+      // Fetch group information for each groupID
+      for (var groupId in groupIDs) {
+        DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+            .collection('Groups')
+            .doc(groupId.toString())
+            .get();
+
+        String groupName = groupDoc['Name'];
+
+        // Fetch group members using existing getGroupMembers function
+        List<Map<String, String>> members =
+            await getGroupMembers(groupId.toString());
+
+        // Add group information to the list
+        groupInfoList.add({
+          'groupid': groupId.toString(),
+          'groupname': groupName,
+          'members': members,
+        });
+      }
+
+      // Print the result
+      print('Group Information for $username:');
+      groupInfoList.forEach((groupInfo) {
+        print(
+            'GroupID: ${groupInfo['groupid']}, GroupName: ${groupInfo['groupname']}');
+        print('Members:');
+        groupInfo['members'].forEach((member) {
+          print('${member['username']}, Avatar: ${member['avatar']}');
+        });
+        print('--------------');
+      });
+    } else {
+      print('User not found with username: $username');
+    }
+  } catch (error) {
+    print('Error fetching group information: $error');
+  }
+
+  return groupInfoList;
+}
+
+Future<List<Map<String, dynamic>>> getGroupsByUsername(String username) async {
+  List<Map<String, dynamic>> groupsList = [];
+
+  try {
+    // Access the Users collection to find the document with the given username
+    QuerySnapshot userQuery = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: username)
+        .get();
+
+    if (userQuery.docs.isNotEmpty) {
+      // Get the groupIDs from the matched document
+      List<dynamic> groupIDs = userQuery.docs.first['groupID'];
+
+      // Access the Groups collection to get the group details
+      for (var groupID in groupIDs) {
+        if (groupID is String) {
+          // groupID is already a string
+          DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+              .collection('Groups')
+              .doc(groupID)
+              .get();
+
+          if (groupDoc.exists) {
+            // Add group details to the list
+            groupsList.add({
+              'groupid': groupID,
+              'groupname': groupDoc['Name'],
+              'challengeid': groupDoc['ChallengeID'], // Include ChallengeID
+            });
+          }
+        } else if (groupID is int) {
+          // Convert groupID to string if it's an integer
+          String groupIDString = groupID.toString();
+
+          DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+              .collection('Groups')
+              .doc(groupIDString)
+              .get();
+
+          if (groupDoc.exists) {
+            // Add group details to the list
+            groupsList.add({
+              'groupid': groupIDString,
+              'groupname': groupDoc['Name'],
+              'challengeid': groupDoc['ChallengeID'], // Include ChallengeID
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    print('Error getting groups: $e');
+    // Handle errors as needed
+  }
+
+  return groupsList;
+}

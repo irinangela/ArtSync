@@ -182,45 +182,35 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
               ),
             ),
             const SizedBox(height: 2),
-            const SizedBox(
-              width: 430,
-              height: 160,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 80,
-                    child: Text(
-                      'The more Private Challenges you complete, the more points you will get.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF797070),
-                        fontSize: 24,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w300,
-                        height: 1.2,
-                        decoration: TextDecoration.none,
-                      ),
-                      softWrap: true,
-                    ),
+            const Column(
+              children: [
+                Text(
+                  'The more Private Challenges you complete, the more points you will get.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF797070),
+                    fontSize: 24,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                    height: 1.2,
+                    decoration: TextDecoration.none,
                   ),
-                  SizedBox(
-                    height: 80,
-                    child: Text(
-                      'Challenge yourself!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF797070),
-                        fontSize: 24,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w300,
-                        height: 1.2,
-                        decoration: TextDecoration.none,
-                      ),
-                      softWrap: true,
-                    ),
+                  softWrap: true,
+                ),
+                Text(
+                  'Challenge yourself!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF797070),
+                    fontSize: 24,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                    height: 1.2,
+                    decoration: TextDecoration.none,
                   ),
-                ],
-              ),
+                  softWrap: true,
+                ),
+              ],
             ),
           ],
         ),
