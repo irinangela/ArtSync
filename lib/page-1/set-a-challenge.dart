@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
-import 'package:myapp/page-1/camera.dart';
+import 'package:shake/shake.dart';
+
 
 class DropDown extends StatefulWidget {
   final Function(String) onDurationSelected;
@@ -123,7 +126,7 @@ class Background2 extends StatelessWidget {
   }
 }
 
-class SetChallenge extends StatelessWidget {
+class SetChallenge extends StatefulWidget {
   final UserData userData;
   final String groupId;
 
@@ -133,13 +136,83 @@ class SetChallenge extends StatelessWidget {
     required this.groupId,
   }) : super(key: key);
 
+  @override
+  _SetChallengeState createState() => _SetChallengeState();
+}
+
+class _SetChallengeState extends State<SetChallenge> {
+  ShakeDetector? detector;
+  bool shook = false;
+  late String challengeTitleShook;
+  late String challengeDescriptionShook;
+  late bool isTypingTit;
+  late bool isTypingDes;
+  late FocusNode titleFocusNode = FocusNode();
+  late FocusNode descriptionFocusNode = FocusNode();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   late String selectedDuration;
 
   @override
+  void initState() {
+    super.initState();
+    detector = ShakeDetector.autoStart(
+      onPhoneShake: () async {
+        bool shook = true;
+        int maxChallengeId = await findMaxChallengeId();
+        int randomChallengeId = Random().nextInt(maxChallengeId) + 1;
+        DocumentSnapshot challengeSnapshot =
+            await FirebaseFirestore.instance.collection('Challenges').doc(randomChallengeId.toString()).get();
+
+        String challengeTitleShook = challengeSnapshot['Title'];
+        String challengeDescriptionShook = challengeSnapshot['Description'];
+        print('Generated random challenge ID: $randomChallengeId');
+      },
+    );
+    isTypingTit = false;
+    isTypingDes = false;
+    titleFocusNode = FocusNode();
+    descriptionFocusNode = FocusNode();
+    titleFocusNode.addListener(() {
+      setState(() {
+        isTypingTit = titleFocusNode.hasFocus;
+      });
+    });
+    descriptionFocusNode.addListener(() { 
+      setState(() {
+      isTypingDes = descriptionFocusNode.hasFocus;
+       });
+    });    
+  }
+
+  @override
+  void dispose() {
+    titleFocusNode.dispose();
+    descriptionFocusNode.dispose();
+    detector?.stopListening();
+    super.dispose();
+  }
+
+  Future<int> findMaxChallengeId() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Challenges').get();
+
+    int maxChallengeId = 0;
+
+    for (QueryDocumentSnapshot document in querySnapshot.docs) {
+      int currentId = int.tryParse(document.id) ?? 0;
+      if (currentId > maxChallengeId) {
+        maxChallengeId = currentId;
+      }
+    }
+    return maxChallengeId;
+  }
+  
+
+  @override
   Widget build(BuildContext context) {
-    print(groupId);
+    String groupId = widget.groupId;
+    UserData userData = widget.userData;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -232,9 +305,16 @@ class SetChallenge extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
                       controller: titleController,
-                      decoration: const InputDecoration(
+                      focusNode: titleFocusNode,
+                      onTap: () {
+                        setState(() {
+                          isTypingTit = true;
+                        });
+                        titleFocusNode.requestFocus();
+                      },
+                      decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'e.g. Starry Night',
+                        hintText: isTypingTit? '': 'e.g. Starry Night',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 20,
@@ -274,9 +354,16 @@ class SetChallenge extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
                       controller: descriptionController,
-                      decoration: const InputDecoration(
+                      focusNode: descriptionFocusNode,
+                      onTap: () {
+                        setState(() {
+                          isTypingDes = true;
+                        });
+                        descriptionFocusNode.requestFocus();
+                      },
+                      decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'e.g. Imagine you just cut your ear off...',
+                        hintText: isTypingDes? '' :'e.g. Imagine you just cut your ear off...',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 20,
@@ -316,15 +403,10 @@ class SetChallenge extends StatelessWidget {
                 })
                 ),
                 const SizedBox(height: 20),
-                
               ],
-              
             ),
-            
-          ),
-          
+          ), 
         )
-        
         ),
         Positioned(
           bottom: 20,
@@ -335,6 +417,7 @@ class SetChallenge extends StatelessWidget {
             height: 50,
             child: SubmitButton(
               onPressed: () async {
+                if (!shook) {
                 String title = titleController.text;
                 String description = descriptionController.text;
                 if (title.isNotEmpty && description.isNotEmpty) {
@@ -352,6 +435,20 @@ class SetChallenge extends StatelessWidget {
 
                    userData.updateSubmissionsID(groupId);
 
+                      DocumentSnapshot<Map<String, dynamic>> participantsSnapshot =
+                        await FirebaseFirestore.instance.collection('Groups').doc(groupId).get();
+
+                    List<String> participantUsernames = List<String>.from(participantsSnapshot['Participants']);
+
+                    for (String username in participantUsernames) {
+                      QuerySnapshot userQuerySnapshot = await FirebaseFirestore.instance.collection('Users').where('username', isEqualTo: username).get();
+
+                      if (userQuerySnapshot.docs.isNotEmpty) {
+                        var userDocument = userQuerySnapshot.docs.first;
+                        userDocument.reference.update({'ChallengePointsUpdated': false});
+                      }
+                    }
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -360,6 +457,27 @@ class SetChallenge extends StatelessWidget {
                 } else {
                   // Show an error message or handle the case where title or description is empty
                   print('Title and description cannot be empty.');
+                }
+                } else {
+                  DocumentReference challengeDocRef =
+                        await FirebaseFirestore.instance.collection('Challenges').add({
+                      'Title': challengeTitleShook,
+                      'Description': challengeDescriptionShook,
+                    });
+                    String challengeId = challengeDocRef.id;
+
+                    await FirebaseFirestore.instance.collection('Groups').doc(groupId).update({
+                      'ChallengeID': challengeId,
+                      'Duration': getDurationValue(selectedDuration),
+                    });
+
+                   userData.updateSubmissionsID(groupId);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(userData: userData)),
+                    );
                 }
               },
               text: 'Submit',
@@ -390,6 +508,4 @@ class SetChallenge extends StatelessWidget {
         return 5;
     }
   }
-
-
 }

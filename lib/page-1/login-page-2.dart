@@ -6,6 +6,7 @@ import 'package:myapp/page-1/sign-up-page.dart';
 import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/models.dart';
 
+
 class LoginPage2 extends StatefulWidget {
   const LoginPage2({Key? key}) : super(key: key);
 
@@ -17,6 +18,11 @@ class _LoginPage2State extends State<LoginPage2> {
   final _formkey = GlobalKey<FormState>();
   String email = '';
   String password = '';
+  late bool isTypingPass;
+  late bool isTypingUs;
+  late FocusNode emailFocusNode;
+  late FocusNode passwordFocusNode;
+
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -55,8 +61,7 @@ class _LoginPage2State extends State<LoginPage2> {
           .get();
 
       if (userSnapshot.exists) {
-        UserData userData = UserData();
-        // Update UserData with the user information
+        UserData userData = UserData(); 
         userData.setUser(UserInfoModel(
           username: userSnapshot['username'],
           email: userSnapshot['email'],
@@ -66,10 +71,13 @@ class _LoginPage2State extends State<LoginPage2> {
           points: userSnapshot['points'],
           ChallengeDuration: userSnapshot['ChallengeDuration'],
           PrivateChallengeID: userSnapshot['PrivateChallengeID'],
+          NextDuration: userSnapshot['NextDuration'],
+          notifications: Notifications(
+            groupname: userSnapshot['Notifications']['groupname'] ?? '0',
+            notify: userSnapshot['Notifications']['notify'] ?? 0,
+          ),
+          ChallengePointsUpdated: userSnapshot['ChallengePointsUpdated'],
         ));
-        print('UserData Filled:');
-        print('Username: ${userData.currentUser?.username}');
-        print('Challenge Duration: ${userData.currentUser?.ChallengeDuration}');
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
@@ -87,6 +95,34 @@ class _LoginPage2State extends State<LoginPage2> {
   }
 }
 
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
+    
+    isTypingUs = false;
+    isTypingPass = false;
+    
+    emailFocusNode.addListener(() {
+      setState(() {
+        isTypingUs = emailFocusNode.hasFocus;
+      });
+    });
+
+    passwordFocusNode.addListener(() {
+      setState(() {
+        isTypingPass = passwordFocusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,11 +271,23 @@ class _LoginPage2State extends State<LoginPage2> {
                                       email = value;
                                     });
                                   },
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 13.0, horizontal: 10.0),
-                                    hintText: 'E-mail',
+                                  onTap: () {
+                                    setState(() {
+                                      isTypingUs = true;
+                                    });
+                                  },
+                                  focusNode: emailFocusNode,
+                                  decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 13.0, horizontal: 10.0),
+                                  hintText: isTypingUs ? '' : 'E-mail',
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                   ),
                                   style: const TextStyle(
                                     color: Colors.black,
@@ -267,29 +315,40 @@ class _LoginPage2State extends State<LoginPage2> {
                           child: Stack(
                             children: [
                               Positioned(
-                                child: TextField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      password = value;
-                                    });
-                                  },
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 13.0, horizontal: 10.0),
-                                    hintText: 'Password',
+                              child: TextField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    password = value;
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    isTypingPass = true;
+                                  });
+                                },
+                                obscureText: true,
+                                focusNode: passwordFocusNode,
+                                  decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 13.0, horizontal: 10.0),
+                                  hintText: isTypingPass ? '' : 'Password',
+                                  hintStyle: TextStyle(                                    
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  style: const TextStyle(
+                                ),
+                                style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
                                     fontFamily: 'Inter',
                                     fontWeight: FontWeight.w500,
                                     height: 0,
                                   ),
-                                ),
                               ),
-                            ],
+                          )],
                           ),
                         ),
                       ),
@@ -347,7 +406,7 @@ class _LoginPage2State extends State<LoginPage2> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

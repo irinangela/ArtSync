@@ -186,6 +186,8 @@ class _SettingsState extends State<MySettings> {
   late int selectedChallengeDuration;
   late TextEditingController usernameController;
   bool isUsernameAvailableFlag = true;
+  late FocusNode usernameFocusNode;
+  late bool isTypingUs;
 
   Future<bool> isUsernameAvailable(String username) async {
   try {
@@ -207,6 +209,19 @@ class _SettingsState extends State<MySettings> {
     selectedAvatar = '';
     selectedChallengeDuration = 5;
     usernameController = TextEditingController();
+    isTypingUs = false;
+    usernameFocusNode = FocusNode();
+    usernameFocusNode.addListener(() {
+      setState(() {
+        isTypingUs = usernameFocusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    usernameFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -216,6 +231,11 @@ class _SettingsState extends State<MySettings> {
         23, (index) => 'assets/page-1/images/avatar${index + 1}.png');
     usernameController = TextEditingController();
     return Scaffold(
+    appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           const Positioned.fill(
@@ -289,9 +309,15 @@ class _SettingsState extends State<MySettings> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
                       controller: usernameController,
-                      decoration: const InputDecoration(
+                      focusNode: usernameFocusNode,
+                      onTap: () {
+                        setState(() {
+                          isTypingUs = true; 
+                        });
+                      },
+                      decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'New Username',
+                        hintText: isTypingUs? '': 'New Username',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 20,

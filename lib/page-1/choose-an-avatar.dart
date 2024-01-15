@@ -128,6 +128,12 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           'QRcode': 'assets/page-1/images/QRcode.png',
           'ChallengeDuration': 5,
           'PrivateChallengeID': 1,
+          'NextDuration' : 5,
+          'Notifications': {
+            'groupname': '0',
+            'notify': 0,
+          },
+          'ChallengePointsUpdated': false,
         }, SetOptions(merge: true));
 
         print('Firestore updated successfully!');
@@ -141,6 +147,12 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           points: 0,
           ChallengeDuration: 5,
           PrivateChallengeID: 1,
+          NextDuration: 5,
+          notifications: Notifications(
+            groupname: '0',
+            notify: 0,
+          ),
+          ChallengePointsUpdated: false,
         ));
       } else {
         print('Error: User is null.');

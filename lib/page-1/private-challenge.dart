@@ -1,5 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
+import 'package:myapp/page-1/home-page.dart';
+
+class SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+  final double fontSize;
+
+  const SubmitButton({
+    Key? key,
+    required this.onPressed,
+    required this.text,
+    this.fontSize = 20,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(text, style: TextStyle(fontSize: fontSize)),
+    );
+  }
+}
 
 class PrivateChallenge extends StatefulWidget {
   final UserData userData;
@@ -17,15 +40,17 @@ class PrivateChallenge extends StatefulWidget {
 class _PrivateChallengeState extends State<PrivateChallenge> {
   @override
   Widget build(BuildContext context) {
-    print('Username: ${widget.userData.currentUser?.username}');
-    print('Title: ${widget.privchallengeInfo['title']}');
+    var currentUsername = widget.userData.currentUser?.username;
+    var currentChallengeID = widget.userData.currentUser?.PrivateChallengeID;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       extendBodyBehindAppBar: true,
-      body: Container(
+      body: Stack(
+      children: [
+      Container(
         width: 430,
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -168,7 +193,7 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
               ),
             ),
             //large sizedbox here so that we can have the rest on the bottom screen
-            const SizedBox(height: 150),
+            const SizedBox(height: 70),
             const Text(
               'Remember!',
               textAlign: TextAlign.center,
@@ -182,49 +207,83 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
               ),
             ),
             const SizedBox(height: 2),
-            const SizedBox(
-              width: 430,
-              height: 160,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 80,
-                    child: Text(
-                      'The more Private Challenges you complete, the more points you will get.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF797070),
-                        fontSize: 24,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w300,
-                        height: 1.2,
-                        decoration: TextDecoration.none,
-                      ),
-                      softWrap: true,
-                    ),
+            Column(
+              children: [
+                Text(
+                  'The more Private Challenges you complete, the more points you will get.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF797070),
+                    fontSize: 24,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                    height: 1.2,
+                    decoration: TextDecoration.none,
                   ),
-                  SizedBox(
-                    height: 80,
-                    child: Text(
-                      'Challenge yourself!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF797070),
-                        fontSize: 24,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.w300,
-                        height: 1.2,
-                        decoration: TextDecoration.none,
-                      ),
-                      softWrap: true,
-                    ),
+                  softWrap: true,
+                ),
+                Text(
+                  'Challenge yourself!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF797070),
+                    fontSize: 24,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.w300,
+                    height: 1.2,
+                    decoration: TextDecoration.none,
                   ),
-                ],
-              ),
+                  softWrap: true,
+                ),
+                SizedBox(height: 20),
+                
+              ],
             ),
+            
           ],
         ),
       ),
-    );
+      Positioned(
+        top: 750,
+        left: 135,
+        child: SizedBox(
+          width: 160,
+          height: 50,
+          child: SubmitButton(
+            onPressed: () async {
+              await FirebaseFirestore.instance.collection('Users')
+                .where('username', isEqualTo: currentUsername)
+                .get()
+                .then((querySnapshot) {
+                  if (querySnapshot.docs.isNotEmpty) {
+                    var document = querySnapshot.docs.first;
+                    int newChallengeID = (document['PrivateChallengeID'] ?? 0) + 1;
+
+                    var nextDuration = document['NextDuration'];
+                    int challengeDuration = nextDuration != null ? nextDuration as int : 0;
+                    int currentPoints = document['points'] ?? 0;
+                    int updatedPoints = currentPoints + 30;
+
+                    document.reference.update({
+                      'PrivateChallengeID': newChallengeID,
+                      'ChallengeDuration': challengeDuration,
+                      'points' : updatedPoints,
+                    });
+                  }
+                });
+
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(userData: widget.userData)),
+                );
+            },
+            text: 'Submit',
+            fontSize: 20,
+          ),
+        ),
+      ),
+      
+    ]));
   }
 }

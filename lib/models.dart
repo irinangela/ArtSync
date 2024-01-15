@@ -10,6 +10,9 @@ class UserInfoModel {
   int points;
   int ChallengeDuration;
   int PrivateChallengeID;
+  int NextDuration;
+  Notifications notifications;
+  bool ChallengePointsUpdated;
 
   UserInfoModel({
     required this.username,
@@ -20,21 +23,32 @@ class UserInfoModel {
     required this.points,
     required this.ChallengeDuration,
     required this.PrivateChallengeID,
+    required this.NextDuration,
+    required this.notifications,
+    required this.ChallengePointsUpdated,
   });
 }
+
+  class Notifications {
+  String groupname;
+  int notify;
+
+  Notifications({
+    required this.groupname,
+    required this.notify,
+  });
+  }
 
 class UserData extends ChangeNotifier {
   UserInfoModel? _currentUser;
 
   UserInfoModel? get currentUser => _currentUser;
 
-  // Method to set the user information
   void setUser(UserInfoModel user) {
     _currentUser = user;
     notifyListeners();
   }
 
-  // Method to clear the user information (e.g., during logout)
   void clearUser() {
     _currentUser = null;
     notifyListeners();
@@ -63,23 +77,19 @@ class UserData extends ChangeNotifier {
         return; // Return early if the newUsername is null or empty
       }
 
-      // Fetch user document based on the 'username' field
       var querySnapshot = await FirebaseFirestore.instance
           .collection('Users')
           .where('username',
-              isEqualTo: user.username) // Change to 'newUsername' if needed
+              isEqualTo: user.username)
           .get();
 
-      // Check if the document exists
       if (querySnapshot.docs.isNotEmpty) {
         var userDocRef = querySnapshot.docs.first.reference;
 
-        // Perform the update
         await userDocRef.update({
           'username': newUsername,
         });
 
-        // If the update is successful, update the local state
         user.username = newUsername;
         notifyListeners();
         print('Username Updated Successfully');
@@ -98,7 +108,7 @@ class UserData extends ChangeNotifier {
     if (_currentUser != null) {
       try {
         //updateChallengeDurationInFirestore(duration);
-        _currentUser!.ChallengeDuration = duration;
+        _currentUser!.NextDuration = duration;
         //print('Notify Listeners before');
         notifyListeners();
         //print('Notify Listeners after');
@@ -113,7 +123,6 @@ class UserData extends ChangeNotifier {
       UserData userData, int duration) async {
     var user = userData.currentUser?.username;
 
-    print(user);
     if (user != null) {
       try {
         await FirebaseFirestore.instance
@@ -124,9 +133,8 @@ class UserData extends ChangeNotifier {
           if (querySnapshot.size == 1) {
             var documentSnapshot = querySnapshot.docs.first;
             documentSnapshot.reference.update({
-              'ChallengeDuration': duration,
+              'NextDuration': duration,
             });
-            // If the update is successful, also update the local state
             userData.updateChallengeDuration(duration);
           } else {
             print('User not found in Firestore');
@@ -157,7 +165,7 @@ class UserData extends ChangeNotifier {
                 'avatar': avatarPath,
               });
               //print('Hooray! Changes saved (updateAvatarInFirestore) 3.');
-              // If the update is successful, also update the local state
+  
               userData.updateAvatar(avatarPath);
             } else {
               print('User not found in Firestore');
@@ -203,9 +211,8 @@ class UserData extends ChangeNotifier {
     return winnerAvatar;
   }
 
-  bool pointsUpdated = false;
   Future<void> updatePointsForCurrentUser(List<String> winners) async {
-  if (_currentUser != null && !pointsUpdated) {
+  if (_currentUser != null) {
     try {
       bool isCurrentUserWinner =
           winners.contains(_currentUser?.username);
@@ -218,32 +225,38 @@ class UserData extends ChangeNotifier {
 
         if (querySnapshot.docs.isNotEmpty) {
           var userDocument = querySnapshot.docs.first;
-          int position = winners.indexOf(_currentUser!.username) + 1;
-          int pointsEarned = 0;
+          bool challengePointsUpdated = userDocument['ChallengePointsUpdated'] ?? false;
 
-          switch (position) {
-            case 1:
-              pointsEarned = 50;
-              break;
-            case 2:
-              pointsEarned = 25;
-              break;
-            case 3:
-              pointsEarned = 10;
-              break;
-            default:
-              break;
+          if (!challengePointsUpdated) {
+            int position = winners.indexOf(_currentUser!.username) + 1;
+            int pointsEarned = 0;
+
+            switch (position) {
+              case 1:
+                pointsEarned = 50;
+                break;
+              case 2:
+                pointsEarned = 25;
+                break;
+              case 3:
+                pointsEarned = 10;
+                break;
+              default:
+                break;
+            }
+
+            // Update points in Firestore
+            await userDocument.reference.update({
+              'points': FieldValue.increment(pointsEarned),
+              'ChallengePointsUpdated': true,
+            });
+
+            // Update points in the local state
+            _currentUser?.points += pointsEarned;
+            notifyListeners();
+          } else {
+            print('Points already updated for this challenge.');
           }
-
-          // Update points in Firestore
-          await userDocument.reference.update({
-            'points': FieldValue.increment(pointsEarned),
-          });
-
-          // Update points in the local state
-          _currentUser?.points += pointsEarned;
-          notifyListeners();
-          pointsUpdated = true;
         } else {
           print('User document not found in Firestore');
         }
@@ -253,6 +266,7 @@ class UserData extends ChangeNotifier {
     }
   }
 }
+
 
 Future<void> updateSubmissionsID(String groupId) async {
   try {
@@ -289,7 +303,5 @@ Future<void> updateSubmissionsID(String groupId) async {
     print('Error fetching or updating submissions: $error');
   }
 }
-
-
 
 }

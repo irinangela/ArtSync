@@ -16,6 +16,12 @@ class _SignUpPageState extends State<SignUpPage> {
   String email = '';
   String username = '';
   String password = '';
+  late FocusNode emailFocusNode;
+  late FocusNode usernameFocusNode;
+  late FocusNode passwordFocusNode;
+  late bool emailVisible;
+  late bool usernameVisible;
+  late bool passwordVisible;
 
   Future<bool> isUsernameAvailable(String username) async {
     try {
@@ -29,6 +35,43 @@ class _SignUpPageState extends State<SignUpPage> {
       print("Error checking username availability: $error");
       return false;
     }
+  }
+
+  @override
+  void initState() {
+  super.initState();
+  emailFocusNode = FocusNode();
+  usernameFocusNode = FocusNode();
+  passwordFocusNode = FocusNode();
+  emailVisible = false;
+  usernameVisible = false;
+  passwordVisible = false;
+
+  emailFocusNode.addListener(() {
+    setState(() {
+      emailVisible = emailFocusNode.hasFocus;
+    });
+  });
+
+  usernameFocusNode.addListener(() {
+    setState(() {
+      usernameVisible = usernameFocusNode.hasFocus;
+    });
+  });
+
+  passwordFocusNode.addListener(() {
+    setState(() {
+      passwordVisible = passwordFocusNode.hasFocus;
+    });
+  });
+}
+
+  @override
+  void dispose() {
+    emailFocusNode.dispose();
+    usernameFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Enter your E-mail:',
-                    hintText: 'E-mail',
+                    hintText: !emailVisible? 'E-mail' : '',
                     onChanged: (val) {
                       setState(() => email = val);
                     },
@@ -77,11 +120,17 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       return null;
                     },
+                    focusNode: emailFocusNode,
+                    onTap: () {
+                      setState(() {
+                        emailFocusNode.requestFocus();
+                      });
+                    },
                   ),
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Pick a username:',
-                    hintText: 'Username',
+                    hintText: !usernameVisible? 'Username': '',
                     onChanged: (val) {
                       setState(() => username = val);
                     },
@@ -91,21 +140,42 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       return null;
                     },
+                    focusNode: usernameFocusNode,
+                    onTap: () {
+                      setState(() {
+                        usernameFocusNode.requestFocus();
+                      });
+                    },
                   ),
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Pick a password:',
-                    hintText: 'Password',
+                    hintText: !passwordVisible? 'Password' : '',
                     onChanged: (val) {
                       setState(() => password = val);
                     },
                     validator: (value) {
+                      if (value!.length < 6) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('The password must be at least 6 characters long.'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      }
                       if (value == null || value.isEmpty) {
                         return "Type in a password";
                       }
+
                       return null;
                     },
                     obscureText: true,
+                    focusNode: passwordFocusNode,
+                    onTap: () {
+                      setState(() {
+                        passwordFocusNode.requestFocus();
+                      });
+                    },
                   ),
                   const SizedBox(height: 90),
                 ],
@@ -125,7 +195,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     bool isAvailable = await isUsernameAvailable(username);
 
                     if (!isAvailable) {
-                      // Username is not available, show a warning to the user
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('The username is not available. Please choose another one.'),
@@ -184,6 +253,8 @@ class _SignUpPageState extends State<SignUpPage> {
     required ValueChanged<String> onChanged,
     required String? Function(String?)? validator,
     bool obscureText = false,
+    required FocusNode focusNode,
+    VoidCallback? onTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,11 +281,13 @@ class _SignUpPageState extends State<SignUpPage> {
               onChanged: onChanged,
               validator: validator,
               obscureText: obscureText,
+              focusNode: focusNode,
+              onTap: onTap,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hintText,
                 hintStyle: const TextStyle(
-                  color: Colors.grey,
+                  color:  Colors.grey,
                   fontSize: 20,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w500,

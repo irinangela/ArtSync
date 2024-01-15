@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CameraApp extends StatefulWidget {
   const CameraApp({Key? key}) : super(key: key);
