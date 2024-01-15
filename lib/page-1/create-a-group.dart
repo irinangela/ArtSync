@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/profile-page.dart';
+import 'package:myapp/page-1/services.dart';
+
+typedef void OnTapCallback(String username);
 
 class CircularUserInfoContainer extends StatefulWidget {
   final String username;
+  final String avatar;
+  final OnTapCallback onTap;
 
-  const CircularUserInfoContainer({Key? key, required this.username})
-      : super(key: key);
+  const CircularUserInfoContainer({
+    Key? key,
+    required this.username,
+    required this.avatar,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   _CircularUserInfoContainerState createState() =>
@@ -23,6 +32,7 @@ class _CircularUserInfoContainerState extends State<CircularUserInfoContainer> {
         setState(() {
           tapped = !tapped;
         });
+        widget.onTap(widget.username);
         print("user has been used");
       },
       child: Container(
@@ -38,7 +48,7 @@ class _CircularUserInfoContainerState extends State<CircularUserInfoContainer> {
           children: [
             ClipOval(
               child: Image.asset(
-                'assets/page-1/images/avatar1.png',
+                widget.avatar,
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
@@ -63,13 +73,23 @@ class _CircularUserInfoContainerState extends State<CircularUserInfoContainer> {
 
 class CreateGroup extends StatefulWidget {
   final UserData userData;
-  const CreateGroup({Key? key, required this.userData}) : super(key: key);
+  List<Map<String, dynamic>> friendsList;
+  List<List<Map<String, String>>> allGroupMembers;
+  CreateGroup(
+      {Key? key,
+      required this.userData,
+      required this.friendsList,
+      required this.allGroupMembers})
+      : super(key: key);
 
   @override
   State<CreateGroup> createState() => _CreateGroupState();
 }
 
 class _CreateGroupState extends State<CreateGroup> {
+  String groupname = '';
+  List<String> selectedUsers = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,6 +151,11 @@ class _CreateGroupState extends State<CreateGroup> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      groupname = value;
+                    });
+                  },
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Group name',
@@ -152,26 +177,108 @@ class _CreateGroupState extends State<CreateGroup> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                scrollDirection: Axis.vertical,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return CircularUserInfoContainer(
-                      username: 'username${index + 1}');
-                },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (int i = 0; i < widget.friendsList.length; i++)
+                      Column(
+                        children: [
+                          CircularUserInfoContainer(
+                            username: widget.friendsList[i]['username']!,
+                            avatar: widget.friendsList[i]['avatar']!,
+                            onTap: (username) {
+                              setState(() {
+                                if (selectedUsers.contains(username)) {
+                                  selectedUsers.remove(username);
+                                } else {
+                                  selectedUsers.add(username);
+                                }
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfilePage(userData: widget.userData)),
-                    );
+                  onTap: () async {
+                    String username = widget.userData.currentUser!.username;
+                    print('Selected Users: $selectedUsers');
+                    if (groupname.isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Existing group'),
+                            content: const Text(
+                                'You need to come up with a name for your new group firstly.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if (selectedUsers.isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Existing group'),
+                            content: const Text(
+                                'You need to pick some users in order to create a new group.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      selectedUsers.add(username);
+                      bool exist =
+                          doesGroupExist(selectedUsers, widget.allGroupMembers);
+                      exist
+                          ? showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Existing group'),
+                                  content: const Text(
+                                      'It seems that this group already exists. Maybe select differents users'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : await createGroupInFirestore(
+                              selectedUsers, groupname);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ProfilePage(userData: widget.userData)),
+                      );
+                    }
                   },
                   child: Container(
                     margin: const EdgeInsets.all(20),

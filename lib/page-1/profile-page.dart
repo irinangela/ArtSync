@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/create-a-group.dart';
+import 'package:myapp/page-1/services.dart';
+import 'package:myapp/page-1/set-a-challenge.dart';
 import 'package:myapp/page-1/settings.dart';
 
 void _showQRcode(BuildContext context) {
@@ -45,7 +47,8 @@ void _showQRcode(BuildContext context) {
   );
 }
 
-void _showDeleteConfirmationDialog(BuildContext context) {
+void _showDeleteConfirmationDialog(BuildContext context, String groupid,
+    List<Map<String, String>> userList, UserData userData) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -55,17 +58,20 @@ void _showDeleteConfirmationDialog(BuildContext context) {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the dialog
+              Navigator.pop(context, false); // Close the dialog
             },
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // Perform the delete operation
-              // Add your logic to delete the group here
-
-              // Close the dialog
-              Navigator.pop(context);
+            onPressed: () async {
+              await deleteGroupAndReferences(groupid, userList);
+              Navigator.pop(context, true); // Signal that a group is deleted
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePage(userData: userData),
+                ),
+              );
             },
             child: const Text('Okay'),
           ),
@@ -128,7 +134,16 @@ class CircularUserContainer extends StatelessWidget {
 }
 
 class GroupContainer extends StatefulWidget {
-  const GroupContainer({super.key});
+  final Map<String, dynamic> groupinfo;
+  final List<Map<String, String>> members;
+  final UserData userData;
+
+  const GroupContainer({
+    required this.groupinfo,
+    required this.members,
+    required this.userData,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _GroupContainerState createState() => _GroupContainerState();
@@ -163,9 +178,9 @@ class _GroupContainerState extends State<GroupContainer> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Headline',
-                  style: TextStyle(
+                Text(
+                  widget.groupinfo['groupname']!,
+                  style: const TextStyle(
                     color: Color(0xFF7B33B7),
                     fontSize: 20.0,
                     fontFamily: 'Inter',
@@ -176,22 +191,36 @@ class _GroupContainerState extends State<GroupContainer> {
                 Row(
                   children: [
                     if (!isExpanded)
-                      Container(
-                        width: 25,
-                        height: 25,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image:
-                                AssetImage('assets/page-1/images/avatar2.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      Row(
+                        children: [
+                          for (int i = 0; i < widget.members.length; i++)
+                            Row(
+                              children: [
+                                const SizedBox(width: 8),
+                                Container(
+                                  width: 25,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          widget.members[i]['avatar']!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
                       ),
                     if (isExpanded)
                       GestureDetector(
                         onTap: () {
-                          _showDeleteConfirmationDialog(context);
+                          _showDeleteConfirmationDialog(
+                              context,
+                              widget.groupinfo['groupid']!,
+                              widget.members,
+                              widget.userData);
                         },
                         child: Container(
                           width: 30,
@@ -212,7 +241,6 @@ class _GroupContainerState extends State<GroupContainer> {
                         setState(() {
                           isExpanded = !isExpanded;
                         });
-                        print("Circular container tapped");
                       },
                       child: Container(
                         width: 30,
@@ -251,15 +279,88 @@ class _GroupContainerState extends State<GroupContainer> {
             if (isExpanded)
               Container(
                 margin: const EdgeInsets.all(5),
-                child: const Text(
-                  'Additional text fyutafeyufyuafvv fceybfcievfyc uehfubwsehvuhdehvd j0ej0vjdi i0ejv0ifjnf j0feiihjb 0fehqj0q',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Inner Column
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (int i = 0; i < widget.members.length; i++)
+                          Text(
+                            '@${widget.members[i]['username']!}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                              height: 0,
+                            ),
+                          ),
+                      ],
+                    ),
+                    // Centered SubmitButton1
+                    Align(
+                      alignment: Alignment.center,
+                      child: GestureDetector(
+                        onTap: () {
+                          String challengeId =
+                              widget.groupinfo['challengeid'] ??
+                                  ''; // Assuming it's a string
+
+                          if (challengeId == '0') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SetChallenge(
+                                      userData: widget.userData,
+                                      groupId: widget.groupinfo['groupid'])),
+                            );
+                          } else {
+                            // Show dialog indicating an active challenge
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Active Challenge'),
+                                  content: Text(
+                                      'There is already an active challenge for group ${widget.groupinfo['groupname']}'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF7B33B7),
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          child: const Text(
+                            "New Challenge",
+                            style: TextStyle(
+                              color: const Color(0xFFE5D4FF),
+                              fontSize: 18,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                              height: 0,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],
@@ -279,11 +380,14 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> friendsList = [];
+  List<Map<String, dynamic>> groups = [];
+  List<List<Map<String, String>>> allGroupMembers = [];
 
   @override
   void initState() {
     super.initState();
     fetchFriendsData();
+    fetchData();
   }
 
   Future<void> fetchFriendsData() async {
@@ -322,7 +426,6 @@ class _ProfilePageState extends State<ProfilePage> {
           friendsList.add({
             'username': friendUsername,
             'avatar': avatar,
-            // Add more fields as needed
           });
         }
 
@@ -336,8 +439,48 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void fetchData() async {
+    String username = widget
+        .userData.currentUser!.username; // Replace with the actual username
+
+    // Get the groups for the given username
+    groups = await getGroupsByUsername(username);
+
+    // Iterate through each group and fetch members
+    for (Map<String, dynamic> group in groups) {
+      String groupId = group['groupid'];
+
+      // Get members for the current group
+      List<Map<String, String>> groupMembers = await getGroupMembers(groupId);
+
+      // Add the group members to the list
+      allGroupMembers.add(groupMembers);
+    }
+
+    setState(() {});
+
+    // Print or use the result as needed
+    for (int i = 0; i < allGroupMembers.length; i++) {
+      print("Group Members for Group ${i + 1}:");
+
+      // Access the group ID from the result of getGroupsByUsername
+      String groupId = groups[i]['groupid'];
+
+      print("Group ID: $groupId");
+
+      allGroupMembers[i].forEach((member) {
+        print("${member['username']}: ${member['avatar']}");
+      });
+
+      print("------");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(groups);
+    print(Alignment.bottomCenter);
+
     print('Username: ${widget.userData.currentUser?.username}');
     return Scaffold(
       body: Container(
@@ -414,8 +557,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  CreateGroup(userData: widget.userData)),
+                              builder: (context) => CreateGroup(
+                                    userData: widget.userData,
+                                    friendsList: friendsList,
+                                    allGroupMembers: allGroupMembers,
+                                  )),
                         );
                       },
                       child: Container(
@@ -473,14 +619,22 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                scrollDirection: Axis.vertical,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return GroupContainer();
-                },
-              ),
+              child: SingleChildScrollView(
+                  child: Column(
+                children: [
+                  for (int i = 0; i < groups.length; i++)
+                    Column(
+                      children: [
+                        GroupContainer(
+                          groupinfo: groups[i],
+                          members: allGroupMembers[i],
+                          userData: widget.userData,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                ],
+              )),
             ),
             NavigationBar1(userData: widget.userData),
           ],
