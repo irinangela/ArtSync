@@ -81,11 +81,6 @@ class _RatingPageState extends State<RatingPage> {
   Widget build(BuildContext context) {
     print(widget.submissions);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      extendBodyBehindAppBar: true,
       body: Container(
         width: 430,
         decoration: const BoxDecoration(
@@ -133,19 +128,22 @@ class _RatingPageState extends State<RatingPage> {
                 },
                 children: [
                   for (int i = 0; i < widget.submissions.length; i++)
-                    ImageContainer(
-                      imagePath: widget.submissions[i]['photo'],
-                      onTapped: (isTapped) {
-                        // Update the selected image index
-                        setState(() {
-                          if (isTapped) {
-                            selectedImageIndex = i;
-                          } else {
-                            selectedImageIndex = -1;
-                          }
-                        });
-                      },
-                    ),
+                    if (widget.submissions[i]['photo'] != '2')
+                      if (widget.submissions[i]['username'] !=
+                          widget.userData.currentUser?.username)
+                        ImageContainer(
+                          imagePath: widget.submissions[i]['photo'],
+                          onTapped: (isTapped) {
+                            // Update the selected image index
+                            setState(() {
+                              if (isTapped) {
+                                selectedImageIndex = i;
+                              } else {
+                                selectedImageIndex = -1;
+                              }
+                            });
+                          },
+                        ),
                 ],
               ),
             ),
@@ -173,11 +171,11 @@ class _RatingPageState extends State<RatingPage> {
                 ),
               ],
             ),
-            
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                 onTap: () async {
+                  print(selectedImageIndex);
                   if (selectedImageIndex != -1) {
                     // Increment the rating in Firestore and update the local submissions list
                     await increaseRating(
