@@ -115,36 +115,24 @@ class _LoginPage1State extends State<LoginPage1> {
   }
 }
 
-  class SlidingWindow extends StatelessWidget {
-    const SlidingWindow({super.key});
+ class SlidingWindow extends StatelessWidget {
+  const SlidingWindow({Key? key});
 
-    @override
-    Widget build(BuildContext context) {
-      double screenWidth = MediaQuery.of(context).size.width;
-      return SizedBox(
-        width: 430,
-        height: 598,
-        child: Stack(
-            children: [
-                Positioned(
-                    left: 0,
-                    top: 0,
-                    child: Container(
-                        width: screenWidth,
-                        height: 598,
-                        decoration: const ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-              ],
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Container(
+      width: screenWidth,
+      height: 598,
+      decoration: const ShapeDecoration(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
         ),
+      ),
     );
   }
 }
