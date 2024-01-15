@@ -47,7 +47,8 @@ void _showQRcode(BuildContext context) {
   );
 }
 
-void _showDeleteConfirmationDialog(BuildContext context) {
+void _showDeleteConfirmationDialog(BuildContext context, String groupid,
+    List<Map<String, String>> userList, UserData userData) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -57,17 +58,20 @@ void _showDeleteConfirmationDialog(BuildContext context) {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the dialog
+              Navigator.pop(context, false); // Close the dialog
             },
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // Perform the delete operation
-              // Add your logic to delete the group here
-
-              // Close the dialog
-              Navigator.pop(context);
+            onPressed: () async {
+              await deleteGroupAndReferences(groupid, userList);
+              Navigator.pop(context, true); // Signal that a group is deleted
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePage(userData: userData),
+                ),
+              );
             },
             child: const Text('Okay'),
           ),
@@ -212,7 +216,11 @@ class _GroupContainerState extends State<GroupContainer> {
                     if (isExpanded)
                       GestureDetector(
                         onTap: () {
-                          _showDeleteConfirmationDialog(context);
+                          _showDeleteConfirmationDialog(
+                              context,
+                              widget.groupinfo['groupid']!,
+                              widget.members,
+                              widget.userData);
                         },
                         child: Container(
                           width: 30,
@@ -281,7 +289,7 @@ class _GroupContainerState extends State<GroupContainer> {
                       children: [
                         for (int i = 0; i < widget.members.length; i++)
                           Text(
-                            widget.members[i]['username']!,
+                            '@${widget.members[i]['username']!}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -306,9 +314,8 @@ class _GroupContainerState extends State<GroupContainer> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SetChallenge(
-                                        userData: widget.userData,
-                                        //groupId: widget.groupinfo['groupid']
-                                      )),
+                                      userData: widget.userData,
+                                      groupId: widget.groupinfo['groupid'])),
                             );
                           } else {
                             // Show dialog indicating an active challenge
@@ -419,7 +426,6 @@ class _ProfilePageState extends State<ProfilePage> {
           friendsList.add({
             'username': friendUsername,
             'avatar': avatar,
-            // Add more fields as needed
           });
         }
 
@@ -551,8 +557,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  CreateGroup(userData: widget.userData)),
+                              builder: (context) => CreateGroup(
+                                    userData: widget.userData,
+                                    friendsList: friendsList,
+                                    allGroupMembers: allGroupMembers,
+                                  )),
                         );
                       },
                       child: Container(

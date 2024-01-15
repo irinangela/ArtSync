@@ -60,22 +60,24 @@ Future<List<Map<String, String>>> getGroupChallengesForUser(
 
       String challengeId = groupDoc['ChallengeID'].toString();
 
-      DocumentSnapshot<Map<String, dynamic>> challengeDoc =
-          await FirebaseFirestore.instance
-              .collection('Challenges')
-              .doc(challengeId)
-              .get();
+      if (challengeId != '0') {
+        DocumentSnapshot<Map<String, dynamic>> challengeDoc =
+            await FirebaseFirestore.instance
+                .collection('Challenges')
+                .doc(challengeId)
+                .get();
 
-      String title = challengeDoc['Title'];
-      String description = challengeDoc['Description'];
+        String title = challengeDoc['Title'];
+        String description = challengeDoc['Description'];
 
-      challenges.add({
-        'groupId': groupId.toString(), // Add groupId to the result
-        'groupName': groupName,
-        'duration': duration,
-        'title': title,
-        'description': description
-      });
+        challenges.add({
+          'groupId': groupId.toString(), // Add groupId to the result
+          'groupName': groupName,
+          'duration': duration,
+          'title': title,
+          'description': description
+        });
+      }
     }
   }
 
@@ -444,4 +446,234 @@ Future<List<Map<String, dynamic>>> getGroupsByUsername(String username) async {
   }
 
   return groupsList;
+}
+
+bool doesGroupExist(List<String> selectedUsers,
+    List<List<Map<String, String>>> allGroupMembers) {
+  for (List<Map<String, String>> groupMembers in allGroupMembers) {
+    // Extract usernames from the current groupMembers list
+    List<String> usernamesInGroup =
+        groupMembers.map((member) => member['username']!).toList();
+
+    // Check if selectedUsers is the same as usernamesInGroup
+    if (selectedUsers.toSet().difference(usernamesInGroup.toSet()).isEmpty &&
+        usernamesInGroup.toSet().difference(selectedUsers.toSet()).isEmpty) {
+      // Return true if there is a match
+      return true;
+    }
+  }
+
+  // Return false if no match is found
+  return false;
+}
+
+Future<void> createGroupInFirestore(
+    List<String> selectedUsers, String groupname) async {
+  try {
+    // Create a new document in the 'Groups' collection
+    DocumentReference groupRef =
+        FirebaseFirestore.instance.collection('Groups').doc();
+
+    // Set the fields of the new document
+    await groupRef.set({
+      'ChallengeID': '0',
+      'Duration': 0,
+      'Name': groupname,
+      'Participants': selectedUsers,
+      'QRcode': 'assets/page-1/images/QRcode.png',
+      'Submissions': Map.fromIterable(
+        selectedUsers,
+        key: (username) => username,
+        value: (_) => {
+          'photoURL': '0',
+          'Rating': 0,
+        },
+      ),
+    });
+
+    print('Group created successfully in Firestore!');
+
+    // Get the ID of the newly created group document
+    String groupId = groupRef.id;
+
+    // Update the 'Users' collection for each selected user
+    for (String username in selectedUsers) {
+      // Retrieve the document ID for the user with the given username
+      QuerySnapshot userQuery = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        String userId = userQuery.docs.first.id;
+
+        // Update the 'groupID' array field in the 'Users' collection with the group ID
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(userId)
+            .update({
+          'groupID': FieldValue.arrayUnion([groupId]),
+        });
+      }
+    }
+
+    print('Users collection updated successfully!');
+  } catch (e) {
+    print('Error creating group in Firestore: $e');
+    // Handle errors as needed
+  }
+}
+
+Future<void> deleteGroupAndReferences(
+    String groupid, List<Map<String, String>> userList) async {
+  try {
+    // Delete the document from the 'Groups' collection
+    await FirebaseFirestore.instance.collection('Groups').doc(groupid).delete();
+
+    print('Group document deleted successfully from Firestore!');
+
+    // Remove the groupid from the 'groupID' field in the 'Users' collection
+    for (Map<String, String> user in userList) {
+      String username = user['username']!;
+
+      // Retrieve the document ID for the user with the given username
+      QuerySnapshot userQuery = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        String userId = userQuery.docs.first.id;
+
+        // Update the 'groupID' array field in the 'Users' collection by removing the groupid
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(userId)
+            .update({
+          'groupID': FieldValue.arrayRemove([groupid]),
+        });
+      }
+    }
+
+    print('Users collection updated successfully!');
+  } catch (e) {
+    print('Error deleting group document and references: $e');
+    // Handle errors as needed
+  }
+}
+
+Future<void> updateNotificationField(String username, String groupName) async {
+  try {
+    // Reference to the Users collection
+    CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+    // Query the documents with the specified username
+    QuerySnapshot querySnapshot =
+        await users.where('username', isEqualTo: username).get();
+
+    // Check if any documents match the query
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document (assuming there is only one user with the given username)
+      DocumentSnapshot userDoc = querySnapshot.docs.first;
+
+      // Update the Notification.notify and groupname fields in the document
+      await users.doc(userDoc.id).update({
+        'Notifications.notify': 1,
+        'Notifications.groupname': groupName,
+      });
+
+      print('Fields updated successfully for user: $username');
+    } else {
+      print('User with username $username not found');
+    }
+  } catch (error) {
+    print('Error updating fields: $error');
+  }
+}
+
+Future<String?> getGroupNameAndResetNotification(String username) async {
+  try {
+    // Reference to the Firestore collection
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('Users');
+
+    // Query for the user with the provided username
+    QuerySnapshot querySnapshot =
+        await usersCollection.where('username', isEqualTo: username).get();
+
+    // Check if the user with the given username exists
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document (assuming there is only one user with a given username)
+      var userDocument =
+          querySnapshot.docs.first.data() as Map<String, dynamic>;
+
+      // Check if Notifications is not null and notify is equal to 1
+      if (userDocument['Notifications'] != null &&
+          userDocument['Notifications']['notify'] == 1) {
+        // Get the 'groupname' field
+        String? groupName = userDocument['Notifications']['groupname'];
+
+        // Update Firestore: Set notify to 0 and groupname to '0'
+        await usersCollection.doc(querySnapshot.docs.first.id).update({
+          'Notifications.notify': 0,
+          'Notifications.groupname': '0',
+        });
+
+        return groupName;
+      } else {
+        // If notify is 0, return 'empty'
+        return 'empty';
+      }
+    }
+
+    // User not found
+    return null;
+  } catch (e) {
+    print('Error getting groupname and resetting notification: $e');
+    return null;
+  }
+}
+
+Future<void> skipChallenge(String username, String groupname) async {
+  try {
+    // Reference to the Firestore collection
+    CollectionReference groupsCollection =
+        FirebaseFirestore.instance.collection('Groups');
+
+    // Query for the group with the provided groupname
+    QuerySnapshot querySnapshot =
+        await groupsCollection.where('Name', isEqualTo: groupname).get();
+
+    // Check if the group with the given groupname exists
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document (assuming there is only one group with the given groupname)
+      var groupDocument = querySnapshot.docs.first;
+
+      // Check if the 'Submissions' field exists in the document
+      if (groupDocument['Submissions'] != null) {
+        // Get the existing 'Submissions' map
+        Map<String, dynamic> submissionsMap =
+            groupDocument['Submissions'] as Map<String, dynamic>;
+
+        // Update the 'photoURL' and 'Rating' fields for the specified username
+        submissionsMap[username] = {'PhotoURL': '2', 'Rating': 0};
+
+        // Update the document in the 'Groups' collection
+        await groupsCollection.doc(groupDocument.id).update({
+          'Submissions': submissionsMap,
+        });
+
+        print('Submissions updated successfully for user: $username');
+      } else {
+        print(
+            'Submissions field not found in the document with groupname: $groupname');
+      }
+    } else {
+      print('Group with groupname $groupname not found');
+    }
+  } catch (e) {
+    print('Error updating submissions: $e');
+  }
 }

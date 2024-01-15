@@ -5,7 +5,10 @@ import 'package:myapp/page-1/rating-page.dart';
 import 'package:myapp/page-1/services.dart';
 
 class MyImageContainer extends StatefulWidget {
-  const MyImageContainer({super.key});
+  final String user;
+  final String groupname;
+  const MyImageContainer(
+      {super.key, required this.user, required this.groupname});
 
   @override
   _MyImageContainerState createState() => _MyImageContainerState();
@@ -28,7 +31,10 @@ class _MyImageContainerState extends State<MyImageContainer> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: changeImage,
+      onTap: () async {
+        changeImage();
+        await updateNotificationField(widget.user, widget.groupname);
+      },
       child: Container(
         width: 35,
         height: 35,
@@ -91,11 +97,13 @@ void _showCenteredContainerWithImage(BuildContext context, String groupname) {
 class AvatarChallenge extends StatefulWidget {
   final String username;
   final String avatar;
+  final String groupname;
 
   const AvatarChallenge({
     Key? key,
     required this.username,
     required this.avatar,
+    required this.groupname,
   }) : super(key: key);
 
   @override
@@ -122,7 +130,11 @@ class _AvatarChallengeState extends State<AvatarChallenge> {
                 ),
               ),
             ),
-            const Positioned(bottom: 0, right: 0, child: MyImageContainer()),
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: MyImageContainer(
+                    user: widget.username, groupname: widget.groupname)),
           ],
         ),
         const SizedBox(height: 8),
@@ -312,7 +324,7 @@ class _GroupChallengeState extends State<GroupChallenge> {
             const Text(
               'See your friends’ progress here:',
               style: TextStyle(
-                color: Colors.black,
+                color: Color.fromARGB(255, 103, 43, 43),
                 fontSize: 20,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
@@ -329,9 +341,9 @@ class _GroupChallengeState extends State<GroupChallenge> {
                     Column(
                       children: [
                         AvatarChallenge(
-                          username: membersNotMe[i]['username']!,
-                          avatar: membersNotMe[i]['avatar']!,
-                        ),
+                            username: membersNotMe[i]['username']!,
+                            avatar: membersNotMe[i]['avatar']!,
+                            groupname: widget.challengeInfo['groupName']!),
                         const SizedBox(height: 10),
                       ],
                     ),
