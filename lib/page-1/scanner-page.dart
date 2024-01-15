@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:myapp/scanner-functions.dart';
+
 
 void main() => runApp(const MaterialApp(home: QRViewExample()));
 //void main() => runApp(const MaterialApp(home: MyHome()));
@@ -39,20 +41,30 @@ class QRViewExample extends StatefulWidget {
 }
 
 class _QRViewExampleState extends State<QRViewExample> {
-  Barcode? result;
+  Barcode? result; // Add this line to declare the result variable
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late AddFriend addFriend;
 
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
+  _QRViewExampleState();
+
+  @override
+  void initState() {
+    super.initState();
+    addFriend = AddFriend(context);
+  }
+
   @override
   void reassemble() {
     super.reassemble();
-    if (Platform.isAndroid) {
-      controller!.pauseCamera();
+    if (controller != null) {
+      if (Platform.isAndroid) {
+        controller!.pauseCamera();
+      }
+      controller!.resumeCamera();
     }
-    controller!.resumeCamera();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +182,9 @@ class _QRViewExampleState extends State<QRViewExample> {
   void _onQRViewCreated(QRViewController controller) {
     setState(() {
       this.controller = controller;
+    });
+    controller.scannedDataStream.listen((scanData) async {
+      await addFriend.addFriendFromQRCode(controller, scanData);
     });
     controller.scannedDataStream.listen((scanData) {
       setState(() {

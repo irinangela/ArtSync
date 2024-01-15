@@ -89,6 +89,26 @@ class CreateGroup extends StatefulWidget {
 class _CreateGroupState extends State<CreateGroup> {
   String groupname = '';
   List<String> selectedUsers = [];
+  late bool isTyping;
+  late FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    isTyping = false;
+    focusNode = FocusNode();
+    focusNode.addListener(() {
+      setState(() {
+        isTyping = focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,9 +176,15 @@ class _CreateGroupState extends State<CreateGroup> {
                       groupname = value;
                     });
                   },
-                  decoration: const InputDecoration(
+                  onTap: () {
+                      setState(() {
+                        isTyping = true;
+                      });
+                    },
+                    focusNode: focusNode,
+                  decoration:  InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Group name',
+                    hintText:  isTyping? '' : 'Group name',
                     hintStyle: TextStyle(
                       color: Colors.grey,
                       fontSize: 20,
