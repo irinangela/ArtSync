@@ -240,7 +240,7 @@ class _CreateGroupState extends State<CreateGroup> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('Existing group'),
+                            title: const Text('Choose a group name'),
                             content: const Text(
                                 'You need to come up with a name for your new group firstly.'),
                             actions: [
@@ -259,7 +259,7 @@ class _CreateGroupState extends State<CreateGroup> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('Existing group'),
+                            title: const Text('Select Users'),
                             content: const Text(
                                 'You need to pick some users in order to create a new group.'),
                             actions: [
@@ -274,36 +274,40 @@ class _CreateGroupState extends State<CreateGroup> {
                         },
                       );
                     } else {
+                      print('in else');
                       selectedUsers.add(username);
+                      print(selectedUsers);
                       bool exist =
                           doesGroupExist(selectedUsers, widget.allGroupMembers);
-                      exist
-                          ? showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Existing group'),
-                                  content: const Text(
-                                      'It seems that this group already exists. Maybe select differents users'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            )
-                          : await createGroupInFirestore(
-                              selectedUsers, groupname);
+                      if (exist) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Existing group'),
+                              content: const Text(
+                                  'It seems that this group already exists. Maybe select differents users'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        await createGroupInFirestore(
+                                 selectedUsers, groupname);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
                                 ProfilePage(userData: widget.userData)),
                       );
+                      }                      
                     }
                   },
                   child: Container(

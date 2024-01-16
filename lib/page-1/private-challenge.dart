@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
+import 'package:myapp/page-1/camera.dart';
 import 'package:myapp/page-1/home-page.dart';
 
 class SubmitButton extends StatelessWidget {
@@ -177,12 +178,12 @@ class _PrivateChallengeState extends State<PrivateChallenge> {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                /*Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CameraApp(),
                   ),
-                );*/
+                );
               },
               child: Container(
                 decoration: const BoxDecoration(

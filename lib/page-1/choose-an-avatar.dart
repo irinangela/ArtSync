@@ -134,6 +134,7 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
             'notify': 0,
           },
           'ChallengePointsUpdated': false,
+          'groupID' : [],
         }, SetOptions(merge: true));
 
         print('Firestore updated successfully!');
