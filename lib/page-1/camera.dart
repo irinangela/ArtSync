@@ -10,6 +10,7 @@ class CameraApp extends StatefulWidget {
 
 class _CameraAppState extends State<CameraApp> {
   late CameraController? _controller; // Make it nullable
+  bool isCameraInitialized = false;
 
   @override
   void initState() {
@@ -18,13 +19,14 @@ class _CameraAppState extends State<CameraApp> {
   }
 
   Future<void> initializeCamera() async {
-    final cameras = await availableCameras();
-    _controller = CameraController(cameras[0], ResolutionPreset.max);
-
     try {
+      final cameras = await availableCameras();
+      _controller = CameraController(cameras[0], ResolutionPreset.max);
       await _controller!.initialize();
       if (mounted) {
-        setState(() {});
+        setState(() {
+          isCameraInitialized = true;
+        });
       }
     } on CameraException catch (e) {
       if (e.code == 'CameraAccessDenied') {
@@ -43,15 +45,14 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller != null && _controller!.value.isInitialized) {
+    if (isCameraInitialized) {
       return Scaffold(
         body: CameraPreview(_controller!),
       );
     } else {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
-          child:
-              CircularProgressIndicator(), // Show a loading indicator while camera initializes
+          child: CircularProgressIndicator(),
         ),
       );
     }
