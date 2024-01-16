@@ -18,7 +18,8 @@ class _NavigationBar1State extends State<NavigationBar1> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AppState(), // Provide the AppState
+      create: (context) =>
+          AppState()..updateShowText(2), // Provide the AppState
       child: Consumer<AppState>(
         builder: (context, appState, _) => Container(
           width: 390,
@@ -51,7 +52,9 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   appState.updateShowText(2);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>  HomePage(userData: widget.userData)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            HomePage(userData: widget.userData)),
                   );
                 },
                 child: RoundedContainer(
@@ -66,7 +69,8 @@ class _NavigationBar1State extends State<NavigationBar1> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  ProfilePage(userData: widget.userData)),
+                        builder: (context) =>
+                            ProfilePage(userData: widget.userData)),
                   );
                 },
                 child: RoundedContainer(

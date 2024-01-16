@@ -49,6 +49,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   flutter_spinkit: ^5.2.0
   fluttertoast: ^8.2.4
+  date_count_down: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -142,6 +143,7 @@ flutter:
     - assets/page-1/images/NewGroup.png
     - assets/page-1/images/bellbutton_pushed.png
     - assets/page-1/images/bellbutton_notpushed.png
+    - assets/page-1/images/skipbutton.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

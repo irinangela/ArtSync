@@ -677,3 +677,44 @@ Future<void> skipChallenge(String username, String groupname) async {
     print('Error updating submissions: $e');
   }
 }
+
+String getPhotoByUsername(
+    List<Map<String, dynamic>> submissions, String username) {
+  for (var submission in submissions) {
+    if (submission['username'] == username) {
+      return submission['photo'];
+    }
+  }
+  // Return a default value or handle the case where the username is not found
+  return 'default_photo_url';
+}
+
+Future<int?> getUserPoints(String username) async {
+  try {
+    // Reference to the 'Users' collection
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('Users');
+
+    // Query for the user with the provided username
+    QuerySnapshot querySnapshot =
+        await usersCollection.where('username', isEqualTo: username).get();
+
+    // Check if any user was found
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document (assuming usernames are unique)
+      DocumentSnapshot userDoc = querySnapshot.docs.first;
+
+      // Extract the 'point' field and return it as an integer
+      int? userPoints = userDoc['points'];
+
+      return userPoints;
+    } else {
+      // Username not found
+      return null;
+    }
+  } catch (e) {
+    // Handle any errors that occurred during the process
+    print('Error fetching user points: $e');
+    return null;
+  }
+}

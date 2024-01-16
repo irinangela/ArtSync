@@ -7,8 +7,12 @@ import 'package:myapp/page-1/services.dart';
 class MyImageContainer extends StatefulWidget {
   final String user;
   final String groupname;
+  final String photo;
   const MyImageContainer(
-      {super.key, required this.user, required this.groupname});
+      {super.key,
+      required this.user,
+      required this.groupname,
+      required this.photo});
 
   @override
   _MyImageContainerState createState() => _MyImageContainerState();
@@ -17,11 +21,12 @@ class MyImageContainer extends StatefulWidget {
 class _MyImageContainerState extends State<MyImageContainer> {
   String currentImage = 'assets/page-1/images/bellbutton_notpushed.png';
   bool imageChanged = false;
+  int status = 0;
 
   void changeImage() {
+    print('Changing image');
     if (!imageChanged) {
       setState(() {
-        // Change the image path only if it hasn't been changed before
         currentImage = 'assets/page-1/images/bellbutton_pushed.png';
         imageChanged = true;
       });
@@ -29,11 +34,30 @@ class _MyImageContainerState extends State<MyImageContainer> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.photo == '0') {
+      status = 0;
+      currentImage = 'assets/page-1/images/bellbutton_notpushed.png';
+    } else if (widget.photo == '2') {
+      status = 1;
+      currentImage = 'assets/page-1/images/skipbutton.png';
+    } else {
+      status = 2;
+      currentImage = 'assets/page-1/images/CheckButton.png';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        changeImage();
-        await updateNotificationField(widget.user, widget.groupname);
+        if (status == 0) {
+          print(status);
+          changeImage();
+          setState(() {});
+          await updateNotificationField(widget.user, widget.groupname);
+        }
       },
       child: Container(
         width: 35,
@@ -98,12 +122,14 @@ class AvatarChallenge extends StatefulWidget {
   final String username;
   final String avatar;
   final String groupname;
+  final String photo;
 
   const AvatarChallenge({
     Key? key,
     required this.username,
     required this.avatar,
     required this.groupname,
+    required this.photo,
   }) : super(key: key);
 
   @override
@@ -134,7 +160,9 @@ class _AvatarChallengeState extends State<AvatarChallenge> {
                 bottom: 0,
                 right: 0,
                 child: MyImageContainer(
-                    user: widget.username, groupname: widget.groupname)),
+                    user: widget.username,
+                    groupname: widget.groupname,
+                    photo: widget.photo)),
           ],
         ),
         const SizedBox(height: 8),
@@ -186,6 +214,8 @@ class _GroupChallengeState extends State<GroupChallenge> {
 
     List<Map<String, dynamic>> membersNotMe =
         removeUserFromList(members, widget.userData.currentUser?.username);
+    List<Map<String, dynamic>> photoinfo =
+        removeUserFromList(submissions, widget.userData.currentUser?.username);
 
     print(membersNotMe);
 
@@ -335,40 +365,53 @@ class _GroupChallengeState extends State<GroupChallenge> {
             const SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
-                  child: Column(
-                children: [
-                  for (int i = 0; i < membersNotMe.length; i++)
-                    Column(
-                      children: [
-                        AvatarChallenge(
-                            username: membersNotMe[i]['username']!,
-                            avatar: membersNotMe[i]['avatar']!,
-                            groupname: widget.challengeInfo['groupName']!),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                ],
-              )),
-            ),
-            /* Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                scrollDirection: Axis.vertical,
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        AvatarChallenge(username: 'username${index * 2 + 1}'),
-                        AvatarChallenge(username: 'username${index * 2 + 2}'),
-                      ],
-                    ),
-                  );
-                },
+                child: Column(
+                  children: [
+                    for (int i = 0; i < membersNotMe.length; i += 2)
+                      Row(
+                        children: [
+                          if (i < membersNotMe.length)
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  AvatarChallenge(
+                                    username: membersNotMe[i]['username']!,
+                                    avatar: membersNotMe[i]['avatar']!,
+                                    groupname:
+                                        widget.challengeInfo['groupName']!,
+                                    photo: getPhotoByUsername(
+                                      submissions,
+                                      membersNotMe[i]['username']!,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          if (i + 1 < membersNotMe.length)
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  AvatarChallenge(
+                                    username: membersNotMe[i + 1]['username']!,
+                                    avatar: membersNotMe[i + 1]['avatar']!,
+                                    groupname:
+                                        widget.challengeInfo['groupName']!,
+                                    photo: getPhotoByUsername(
+                                      submissions,
+                                      membersNotMe[i + 1]['username']!,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),*/
+            ),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,

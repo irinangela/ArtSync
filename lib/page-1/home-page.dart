@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myapp/models.dart';
@@ -7,6 +10,21 @@ import 'package:myapp/page-1/private-challenge.dart';
 import 'package:myapp/page-1/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:async';
+
+Future<int> findMaxChallengeId() async {
+  QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('Challenges').get();
+
+  int maxChallengeId = 0;
+
+  for (QueryDocumentSnapshot document in querySnapshot.docs) {
+    int currentId = int.tryParse(document.id) ?? 0;
+    if (currentId > maxChallengeId) {
+      maxChallengeId = currentId;
+    }
+  }
+  return maxChallengeId;
+}
 
 void _showExitChallengeConfirmation(
     BuildContext context, String username, String groupname) {
@@ -30,6 +48,78 @@ void _showExitChallengeConfirmation(
               await skipChallenge(username, groupname);
               // Close the dialog
               Navigator.pop(context);
+            },
+            child: const Text('Skip'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showExitPrivateChallengeConfirmation(
+    BuildContext context, String username, UserData userData) {
+  print('My username is: $username');
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Skip Challenge'),
+        content: const Text(
+            'Are you sure you want to skip this challenge? You will be deducted 30 points and a new random challenge will be ready for you'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // reduce points by 30
+              await FirebaseFirestore.instance
+                  .collection('Users')
+                  .where('username', isEqualTo: username)
+                  .get()
+                  .then((querySnapshot) {
+                if (querySnapshot.docs.isNotEmpty) {
+                  var document = querySnapshot.docs.first;
+                  int newChallengeID =
+                      (document['PrivateChallengeID'] ?? 0) + 1;
+
+                  var nextDuration = document['NextDuration'];
+                  int challengeDuration =
+                      nextDuration != null ? nextDuration as int : 0;
+                  int currentPoints = document['points'] ?? 0;
+                  int updatedPoints = currentPoints - 30;
+
+                  document.reference.update({
+                    'PrivateChallengeID': newChallengeID,
+                    'ChallengeDuration': challengeDuration,
+                    'points': updatedPoints,
+                  });
+                }
+              });
+              // get a new challengeid
+              int maxChallengeId = await findMaxChallengeId();
+              int randomChallengeId = Random().nextInt(maxChallengeId) + 1;
+              DocumentSnapshot challengeSnapshot = await FirebaseFirestore
+                  .instance
+                  .collection('Challenges')
+                  .doc(randomChallengeId.toString())
+                  .get();
+
+              String challengeTitleShook = challengeSnapshot['Title'];
+              String challengeDescriptionShook =
+                  challengeSnapshot['Description'];
+              print('Generated random challenge ID: $randomChallengeId');
+
+              // Close the dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomePage(userData: userData)),
+              );
             },
             child: const Text('Skip'),
           ),
@@ -164,6 +254,10 @@ class _ChallengeState extends State<Challenge> {
         if (widget.isGroup)
           _showExitChallengeConfirmation(
               context, widget.userData.currentUser!.username, widget.groupName);
+        if (!widget.isGroup) {
+          _showExitPrivateChallengeConfirmation(
+              context, widget.userData.currentUser!.username, widget.userData);
+        }
       },
       onTap: () {
         if (widget.isGroup) {
@@ -293,6 +387,7 @@ class _HomePageState extends State<HomePage> {
   Map<String, String> privchallengeInfo = {};
   bool isLoading = true;
   String notifyMe = "empty";
+  int points = 0;
 
   @override
   void initState() {
@@ -301,6 +396,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadChallenges() async {
+    points = (await getUserPoints(widget.userData.currentUser!.username))!;
     challengeInfo = await getGroupChallengesForUser(widget.userData);
     privchallengeInfo = await getPrivateChallengeForUser(widget.userData);
     notifyMe = (await getGroupNameAndResetNotification(
@@ -317,7 +413,7 @@ class _HomePageState extends State<HomePage> {
       Fluttertoast.showToast(
           msg:
               'Notification from your group: $notifyMe.\nPlease keep up with your work for the challenge.',
-          toastLength: Toast.LENGTH_SHORT, // Duration for the toast
+          toastLength: Toast.LENGTH_LONG, // Duration for the toast
           gravity: ToastGravity.TOP, // Position of the toast
           timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
           backgroundColor: Colors.deepPurple, // Background color of the toast
@@ -328,22 +424,32 @@ class _HomePageState extends State<HomePage> {
     print('Username: ${widget.userData.currentUser?.username}');
 
     if (isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SpinKitFadingCircle(
-              color: Colors.blue, // Choose your desired color
-              size: 50.0, // Choose your desired size
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Loading Challenges...',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
+      return Scaffold(
+          body: Container(
+        width: 430,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/page-1/images/Background3.png'),
+            fit: BoxFit.fill,
+          ),
         ),
-      );
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SpinKitFadingCircle(
+                color: Colors.deepPurple, // Choose your desired color
+                size: 50.0, // Choose your desired size
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Loading Challenges...',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ));
     }
 
     return Scaffold(
@@ -362,9 +468,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  (widget.userData.currentUser?.points ?? 0) < 100
+                  (points ?? 0) < 100
                       ? 'Level: Beginner'
-                      : (widget.userData.currentUser?.points ?? 0) <= 200
+                      : (points ?? 0) <= 200
                           ? 'Level: Intermediate'
                           : 'Level: Pro',
                   style: const TextStyle(
@@ -376,7 +482,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Points(
-                  number: '${widget.userData.currentUser?.points}',
+                  number: points.toString(),
                   points: 'points',
                   containerColor: const Color(0xFFE5D4FF),
                 ),

@@ -78,6 +78,12 @@ class _RatingPageState extends State<RatingPage> {
   int selectedImageIndex = -1;
 
   @override
+  void initState() {
+    super.initState();
+    selectedImageIndex = -1;
+  }
+
+  @override
   Widget build(BuildContext context) {
     print(widget.submissions);
     return Scaffold(
@@ -207,7 +213,8 @@ class _RatingPageState extends State<RatingPage> {
                     );
                     return; // Return to avoid navigating to Results when no image is selected
                   }
-                  // Navigate to Results page
+
+                  // Navigate to Results page only when an image is selected
                   // ignore: use_build_context_synchronously
                   Navigator.push(
                     context,

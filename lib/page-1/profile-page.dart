@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/create-a-group.dart';
@@ -382,6 +383,8 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> friendsList = [];
   List<Map<String, dynamic>> groups = [];
   List<List<Map<String, String>>> allGroupMembers = [];
+  bool isLoading = true;
+  int asyncOperationsCount = 2;
 
   @override
   void initState() {
@@ -430,7 +433,10 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         // Update the state to trigger a rebuild with the fetched data
-        setState(() {});
+        setState(() {
+          asyncOperationsCount--; // Decrement the counter
+          checkAsyncOperations(); // Check if all operations are complete
+        });
       } else {
         print('No documents found in friendsSnapshot');
       }
@@ -457,7 +463,10 @@ class _ProfilePageState extends State<ProfilePage> {
       allGroupMembers.add(groupMembers);
     }
 
-    setState(() {});
+    setState(() {
+      asyncOperationsCount--; // Decrement the counter
+      checkAsyncOperations(); // Check if all operations are complete
+    });
 
     // Print or use the result as needed
     for (int i = 0; i < allGroupMembers.length; i++) {
@@ -476,12 +485,52 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Check if all asynchronous operations are complete
+  void checkAsyncOperations() {
+    if (asyncOperationsCount == 0) {
+      setState(() {
+        isLoading =
+            false; // Set isLoading to false when all operations are complete
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print(groups);
     print(Alignment.bottomCenter);
 
     print('Username: ${widget.userData.currentUser?.username}');
+
+    if (isLoading) {
+      return Scaffold(
+        body: Container(
+          width: 430,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/page-1/images/Background2.png'),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SpinKitFadingCircle(
+                  color: Colors.deepPurple, // Choose your desired color
+                  size: 50.0, // Choose your desired size
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Loading Profile...',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         width: 430,
