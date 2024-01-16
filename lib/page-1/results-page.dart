@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
@@ -287,9 +288,12 @@ class Results extends StatelessWidget {
               child: SubmitButton(
                 onPressed: () async {
                   if (isCurrentUserWinner) {
-                    // Update points for the current user in Firestore
+                    // Update points for the current user in Firestoe
                     await userData.updatePointsForCurrentUser(winners);
                   }
+                  await FirebaseFirestore.instance.collection('Groups').doc(groupId).update({
+                      'ChallengeID': '0',
+                    });
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
@@ -332,7 +336,7 @@ class Results extends StatelessWidget {
     );
     } else {
           // Handle loading or other states
-          return const CircularProgressIndicator(); // You can replace this with a loading indicator or other UI.
+          return const CircularProgressIndicator();
     }
   });
 }

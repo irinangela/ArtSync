@@ -78,10 +78,35 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 }
 
-class MainText extends StatelessWidget {
+class MainText extends StatefulWidget {
   final ValueChanged<String> onEmailChanged;
 
   const MainText({Key? key, required this.onEmailChanged}) : super(key: key);
+  @override
+  _MainTextState createState() => _MainTextState();
+}
+
+  class _MainTextState extends State<MainText> {
+  late bool isTyping;
+  late FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    isTyping = false;
+    focusNode = FocusNode();
+    focusNode.addListener(() {
+      setState(() {
+        isTyping = focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +115,8 @@ class MainText extends StatelessWidget {
     return Stack(
       children: [
         SizedBox(
-          width: 430,
-          height: 932,
+          width: screenWidth,
+          height: screenHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,32 +167,41 @@ class MainText extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    width: 340,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TextFormField(
-                      onChanged: onEmailChanged,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 10.0),
-                        hintText: 'E-mail',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                        ),
+                  width: 300,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextFormField(
+                    onChanged: (val) {
+                      widget.onEmailChanged(val);
+                    },
+                    onTap: () {
+                      setState(() {
+                        isTyping = true;
+                      });
+                    },
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 10.0,
                       ),
-                      style: const TextStyle(
-                        color: Colors.black,
+                      hintText: isTyping ? '' : 'E-mail',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
                         fontSize: 20,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        height: 0,
+                        fontWeight: isTyping ? FontWeight.bold : FontWeight.w400,
+                      ),
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w500,
+                      height: 0,
                       ),
                     ),
                   ),

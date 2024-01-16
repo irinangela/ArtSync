@@ -186,6 +186,9 @@ class _SettingsState extends State<MySettings> {
   late int selectedChallengeDuration;
   late TextEditingController usernameController;
   bool isUsernameAvailableFlag = true;
+  late FocusNode usernameFocusNode;
+  late bool isTypingUs;
+  late String currentUsername;
 
   Future<bool> isUsernameAvailable(String username) async {
   try {
@@ -204,9 +207,23 @@ class _SettingsState extends State<MySettings> {
   @override
   void initState() {
     super.initState();
+    currentUsername = widget.userData.currentUser?.username ?? '';
     selectedAvatar = '';
     selectedChallengeDuration = 5;
-    usernameController = TextEditingController();
+    usernameController = TextEditingController(text: currentUsername);
+    isTypingUs = false;
+    usernameFocusNode = FocusNode();
+    usernameFocusNode.addListener(() {
+      setState(() {
+        isTypingUs = usernameFocusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    usernameFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -214,8 +231,12 @@ class _SettingsState extends State<MySettings> {
     print('Username: ${widget.userData.currentUser?.username}');
     final List<String> avatars = List.generate(
         23, (index) => 'assets/page-1/images/avatar${index + 1}.png');
-    usernameController = TextEditingController();
     return Scaffold(
+    appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           const Positioned.fill(
@@ -288,10 +309,21 @@ class _SettingsState extends State<MySettings> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          currentUsername = value;
+                        });
+                      },
                       controller: usernameController,
-                      decoration: const InputDecoration(
+                      focusNode: usernameFocusNode,
+                      onTap: () {
+                        setState(() {
+                          isTypingUs = true; 
+                        });
+                      },
+                      decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'New Username',
+                        hintText: isTypingUs? '': 'New Username',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 20,
@@ -412,17 +444,17 @@ class _SettingsState extends State<MySettings> {
                   UserData userData =
                       Provider.of<UserData>(context, listen: false);
                  
-                  await userData.updateChallengeDurationInFirestore(
-                      widget.userData, selectedChallengeDuration);
-                  await userData.updateAvatarInFirestore(
-                      widget.userData, selectedAvatar);
+                    await userData.updateChallengeDurationInFirestore(
+                        widget.userData, selectedChallengeDuration);
+                    await userData.updateAvatarInFirestore(
+                        widget.userData, selectedAvatar);
 
-                  final newUsername = usernameController.text;
-                  if (newUsername.isNotEmpty) {
-                    bool isAvailable = await isUsernameAvailable(newUsername);
-                    if(isAvailable) {
-                      await userData.updateUsernameInFirestore(
-                          widget.userData, newUsername);
+                    final newUsername = usernameController.text;
+                    if (newUsername.isNotEmpty) {
+                      bool isAvailable = await isUsernameAvailable(newUsername);
+                      if (isAvailable) {
+                        await userData.updateUsernameInFirestore(
+                            widget.userData, newUsername);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
