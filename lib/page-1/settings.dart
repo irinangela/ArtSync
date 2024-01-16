@@ -210,7 +210,7 @@ class _SettingsState extends State<MySettings> {
     currentUsername = widget.userData.currentUser?.username ?? '';
     selectedAvatar = '';
     selectedChallengeDuration = 5;
-    usernameController = TextEditingController(text: currentUsername);
+    usernameController = TextEditingController(text: "");
     isTypingUs = false;
     usernameFocusNode = FocusNode();
     usernameFocusNode.addListener(() {
