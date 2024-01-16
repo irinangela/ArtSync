@@ -202,7 +202,6 @@ class _GroupChallengeState extends State<GroupChallenge> {
     members = await getGroupMembers(id);
     submissions = await getSubmissions(id);
 
-    // This will trigger a rebuild with the updated members list
     if (mounted) {
       setState(() {});
     }

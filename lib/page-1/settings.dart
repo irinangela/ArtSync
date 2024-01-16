@@ -191,18 +191,18 @@ class _SettingsState extends State<MySettings> {
   late String currentUsername;
 
   Future<bool> isUsernameAvailable(String username) async {
-  try {
-    QuerySnapshot query = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('username', isEqualTo: username)
-        .get();
+    try {
+      QuerySnapshot query = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('username', isEqualTo: username)
+          .get();
 
-    return query.docs.isEmpty;
-  } catch (error) {
-    print("Error checking username availability: $error");
-    return false;
+      return query.docs.isEmpty;
+    } catch (error) {
+      print("Error checking username availability: $error");
+      return false;
+    }
   }
-}
 
   @override
   void initState() {
@@ -232,7 +232,7 @@ class _SettingsState extends State<MySettings> {
     final List<String> avatars = List.generate(
         23, (index) => 'assets/page-1/images/avatar${index + 1}.png');
     return Scaffold(
-    appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -318,13 +318,13 @@ class _SettingsState extends State<MySettings> {
                       focusNode: usernameFocusNode,
                       onTap: () {
                         setState(() {
-                          isTypingUs = true; 
+                          isTypingUs = true;
                         });
                       },
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: isTypingUs? '': 'New Username',
-                        hintStyle: TextStyle(
+                        hintText: isTypingUs ? '' : 'New Username',
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                           fontSize: 20,
                           fontFamily: 'Inter',
@@ -443,43 +443,43 @@ class _SettingsState extends State<MySettings> {
                 onPressed: () async {
                   UserData userData =
                       Provider.of<UserData>(context, listen: false);
-                 
-                    await userData.updateChallengeDurationInFirestore(
-                        widget.userData, selectedChallengeDuration);
-                    await userData.updateAvatarInFirestore(
-                        widget.userData, selectedAvatar);
 
-                    final newUsername = usernameController.text;
-                    if (newUsername.isNotEmpty) {
-                      bool isAvailable = await isUsernameAvailable(newUsername);
-                      if (isAvailable) {
-                        await userData.updateUsernameInFirestore(
-                            widget.userData, newUsername);
+                  await userData.updateChallengeDurationInFirestore(
+                      widget.userData, selectedChallengeDuration);
+                  await userData.updateAvatarInFirestore(
+                      widget.userData, selectedAvatar);
+
+                  final newUsername = usernameController.text;
+                  if (newUsername.isNotEmpty) {
+                    bool isAvailable = await isUsernameAvailable(newUsername);
+                    if (isAvailable) {
+                      await userData.updateUsernameInFirestore(
+                          widget.userData, newUsername);
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ProfilePage(userData: widget.userData),
-                          ),
-                        );
-                    }
-                    else{
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfilePage(userData: widget.userData),
+                        ),
+                      );
+                    } else {
                       // Username is not available, show a warning to the user
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('The username is not available. Please choose another one.'),
+                          content: Text(
+                              'The username is not available. Please choose another one.'),
                           duration: Duration(seconds: 3),
                         ),
                       );
                     }
                   } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProfilePage(userData: widget.userData),
-                    ),
-                  );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(userData: widget.userData),
+                      ),
+                    );
                   }
                 },
                 text: 'Save Changes',

@@ -26,7 +26,6 @@ void _showQRcode(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text("QR code"),
-              // Your image widget here
               Image.asset(
                 'assets/page-1/images/QRcode.png',
                 width: 300,
@@ -36,7 +35,7 @@ void _showQRcode(BuildContext context) {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 },
                 child: const Text('Close'),
               ),
@@ -59,14 +58,14 @@ void _showDeleteConfirmationDialog(BuildContext context, String groupid,
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context, false); // Close the dialog
+              Navigator.pop(context, false);
             },
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
               await deleteGroupAndReferences(groupid, userList);
-              Navigator.pop(context, true); // Signal that a group is deleted
+              Navigator.pop(context, true);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -301,14 +300,12 @@ class _GroupContainerState extends State<GroupContainer> {
                           ),
                       ],
                     ),
-                    // Centered SubmitButton1
                     Align(
                       alignment: Alignment.center,
                       child: GestureDetector(
                         onTap: () {
                           String challengeId =
-                              widget.groupinfo['challengeid'] ??
-                                  ''; // Assuming it's a string
+                              widget.groupinfo['challengeid'] ?? '';
 
                           if (challengeId == '0') {
                             Navigator.push(
@@ -319,12 +316,11 @@ class _GroupContainerState extends State<GroupContainer> {
                                       groupId: widget.groupinfo['groupid'])),
                             );
                           } else {
-                            // Show dialog indicating an active challenge
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Active Challenge'),
+                                  title: const Text('Active Challenge'),
                                   content: Text(
                                       'There is already an active challenge for group ${widget.groupinfo['groupname']}'),
                                   actions: [
@@ -333,7 +329,7 @@ class _GroupContainerState extends State<GroupContainer> {
                                         Navigator.of(context)
                                             .pop(); // Close the dialog
                                       },
-                                      child: Text('OK'),
+                                      child: const Text('OK'),
                                     ),
                                   ],
                                 );
@@ -344,13 +340,13 @@ class _GroupContainerState extends State<GroupContainer> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Color(0xFF7B33B7),
+                            color: const Color(0xFF7B33B7),
                             borderRadius: BorderRadius.circular(25.0),
                           ),
                           child: const Text(
                             "New Challenge",
                             style: TextStyle(
-                              color: const Color(0xFFE5D4FF),
+                              color: Color(0xFFE5D4FF),
                               fontSize: 18,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w500,
@@ -397,22 +393,18 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       var currentUser = widget.userData.currentUser;
 
-      // Fetch friends data from Firestore based on the user's information
       QuerySnapshot friendsSnapshot = await FirebaseFirestore.instance
           .collection('Users')
           .where('username', isEqualTo: currentUser?.username)
           .get();
 
       if (friendsSnapshot.docs.isNotEmpty) {
-        // Extract the friends list from the snapshot
         List<dynamic> friendsData = (friendsSnapshot.docs.first.data()
                 as Map<String, dynamic>?)?['Friends'] ??
             [];
 
-        // Ensure that friendsData is a list of strings
         List<String> friendsUsernames = List<String>.from(friendsData);
 
-        // Iterate over the friends data and fetch additional information
         for (var friendUsername in friendsUsernames) {
           DocumentSnapshot friendSnapshot = await FirebaseFirestore.instance
               .collection('Users')
@@ -420,22 +412,19 @@ class _ProfilePageState extends State<ProfilePage> {
               .get()
               .then((querySnapshot) => querySnapshot.docs.first);
 
-          // Extract avatar and other information from the friend's snapshot
           String avatar = (friendSnapshot.data()
                   as Map<String, dynamic>?)?['avatar'] as String? ??
               '';
 
-          // Add the friend's data to the list
           friendsList.add({
             'username': friendUsername,
             'avatar': avatar,
           });
         }
 
-        // Update the state to trigger a rebuild with the fetched data
         setState(() {
-          asyncOperationsCount--; // Decrement the counter
-          checkAsyncOperations(); // Check if all operations are complete
+          asyncOperationsCount--;
+          checkAsyncOperations();
         });
       } else {
         print('No documents found in friendsSnapshot');
@@ -446,33 +435,25 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void fetchData() async {
-    String username = widget
-        .userData.currentUser!.username; // Replace with the actual username
-
-    // Get the groups for the given username
+    String username = widget.userData.currentUser!.username;
     groups = await getGroupsByUsername(username);
 
-    // Iterate through each group and fetch members
     for (Map<String, dynamic> group in groups) {
       String groupId = group['groupid'];
 
-      // Get members for the current group
       List<Map<String, String>> groupMembers = await getGroupMembers(groupId);
 
-      // Add the group members to the list
       allGroupMembers.add(groupMembers);
     }
 
     setState(() {
-      asyncOperationsCount--; // Decrement the counter
-      checkAsyncOperations(); // Check if all operations are complete
+      asyncOperationsCount--;
+      checkAsyncOperations();
     });
 
-    // Print or use the result as needed
     for (int i = 0; i < allGroupMembers.length; i++) {
       print("Group Members for Group ${i + 1}:");
 
-      // Access the group ID from the result of getGroupsByUsername
       String groupId = groups[i]['groupid'];
 
       print("Group ID: $groupId");
@@ -485,12 +466,10 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Check if all asynchronous operations are complete
   void checkAsyncOperations() {
     if (asyncOperationsCount == 0) {
       setState(() {
-        isLoading =
-            false; // Set isLoading to false when all operations are complete
+        isLoading = false;
       });
     }
   }
@@ -517,8 +496,8 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SpinKitFadingCircle(
-                  color: Colors.deepPurple, // Choose your desired color
-                  size: 50.0, // Choose your desired size
+                  color: Colors.deepPurple,
+                  size: 50.0,
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -581,8 +560,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       'assets/page-1/images/default_avatar.png',
                   username:
                       widget.userData.currentUser?.username ?? 'Your Username',
-                  imageSize: 120.0, // Adjust as needed
-                  fontSize: 18.0, // Adjust as needed
+                  imageSize: 120.0,
+                  fontSize: 18.0,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -640,6 +619,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+            if (friendsList.isEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                height: 100,
+                width: 376,
+                padding: const EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                decoration: ShapeDecoration(
+                  color: const Color(0x7FF1EAFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadows: const [
+                    BoxShadow(
+                      color: Color.fromARGB(163, 207, 162, 247),
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                      spreadRadius: 0,
+                    )
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    "Add some friends on ArtSync and in this area you will find your friendlist",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Color(0xFF7B33B7),
+                    ),
+                  ),
+                ),
+              ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -667,6 +676,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+            if (groups.isEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                height: 100,
+                width: 376,
+                padding: const EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                decoration: ShapeDecoration(
+                  color: const Color(0x7FF1EAFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadows: const [
+                    BoxShadow(
+                      color: Color.fromARGB(163, 207, 162, 247),
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                      spreadRadius: 0,
+                    )
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    "Create some groups on ArtSync and in this area you will find group information",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Color(0xFF7B33B7),
+                    ),
+                  ),
+                ),
+              ),
             Expanded(
               child: SingleChildScrollView(
                   child: Column(

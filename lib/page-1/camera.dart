@@ -9,7 +9,7 @@ class CameraApp extends StatefulWidget {
 }
 
 class _CameraAppState extends State<CameraApp> {
-  late CameraController? _controller; // Make it nullable
+  late CameraController? _controller;
   bool isCameraInitialized = false;
 
   @override
@@ -29,17 +29,13 @@ class _CameraAppState extends State<CameraApp> {
         });
       }
     } on CameraException catch (e) {
-      if (e.code == 'CameraAccessDenied') {
-        // Handle access errors here.
-      } else {
-        // Handle other errors here.
-      }
+      if (e.code == 'CameraAccessDenied') {}
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose(); // Dispose only if it's not null
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -50,7 +46,7 @@ class _CameraAppState extends State<CameraApp> {
         body: CameraPreview(_controller!),
       );
     } else {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),

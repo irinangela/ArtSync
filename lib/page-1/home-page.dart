@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -39,7 +38,7 @@ void _showExitChallengeConfirmation(
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the dialog
+              Navigator.pop(context);
             },
             child: const Text('Cancel'),
           ),
@@ -58,7 +57,7 @@ void _showExitChallengeConfirmation(
 }
 
 void _showExitPrivateChallengeConfirmation(
-    BuildContext context, String username, UserData userData) {
+    BuildContext context, String username, UserData userData, int points) {
   print('My username is: $username');
   showDialog(
     context: context,
@@ -70,13 +69,14 @@ void _showExitPrivateChallengeConfirmation(
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the dialog
+              Navigator.pop(context);
             },
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
-              // reduce points by 30
+              // reduce points by 30 if i can
+
               await FirebaseFirestore.instance
                   .collection('Users')
                   .where('username', isEqualTo: username)
@@ -93,13 +93,19 @@ void _showExitPrivateChallengeConfirmation(
                   int currentPoints = document['points'] ?? 0;
                   int updatedPoints = currentPoints - 30;
 
+                  bool enough = true;
+                  if (updatedPoints < 0) {
+                    enough = false;
+                  }
+
                   document.reference.update({
                     'PrivateChallengeID': newChallengeID,
                     'ChallengeDuration': challengeDuration,
-                    'points': updatedPoints,
+                    'points': enough ? updatedPoints : 0,
                   });
                 }
               });
+
               // get a new challengeid
               int maxChallengeId = await findMaxChallengeId();
               int randomChallengeId = Random().nextInt(maxChallengeId) + 1;
@@ -114,7 +120,6 @@ void _showExitPrivateChallengeConfirmation(
                   challengeSnapshot['Description'];
               print('Generated random challenge ID: $randomChallengeId');
 
-              // Close the dialog
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -195,6 +200,7 @@ class Challenge extends StatefulWidget {
   String challengeTitle;
   String duration;
   String groupName;
+  int points;
 
   Challenge({
     Key? key,
@@ -204,6 +210,7 @@ class Challenge extends StatefulWidget {
     this.challengeTitle = '',
     this.groupName = '',
     this.duration = '',
+    required this.points,
   }) : super(key: key);
 
   @override
@@ -217,9 +224,7 @@ class _ChallengeState extends State<Challenge> {
   @override
   void initState() {
     super.initState();
-    // Convert the string duration to a Duration object
     _remainingTime = Duration(days: int.parse(widget.duration));
-    // Start the countdown timer
     _timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
   }
 
@@ -228,14 +233,14 @@ class _ChallengeState extends State<Challenge> {
       if (_remainingTime.inSeconds > 0) {
         _remainingTime = _remainingTime - const Duration(seconds: 1);
       } else {
-        _timer.cancel(); // Stop the timer when the countdown reaches zero
+        _timer.cancel();
       }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // Cancel the timer to avoid memory leaks
+    _timer.cancel();
     super.dispose();
   }
 
@@ -256,7 +261,10 @@ class _ChallengeState extends State<Challenge> {
               context, widget.userData.currentUser!.username, widget.groupName);
         if (!widget.isGroup) {
           _showExitPrivateChallengeConfirmation(
-              context, widget.userData.currentUser!.username, widget.userData);
+              context,
+              widget.userData.currentUser!.username,
+              widget.userData,
+              widget.points);
         }
       },
       onTap: () {
@@ -338,7 +346,6 @@ class _ChallengeState extends State<Challenge> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           _formatDuration(_remainingTime),
-                          // Display the formatted countdown timer
                           style: const TextStyle(
                             color: Color(0xFFA75FE3),
                             fontSize: 20,
@@ -355,7 +362,6 @@ class _ChallengeState extends State<Challenge> {
                     children: [
                       Text(
                         _formatDuration(_remainingTime),
-                        // Display the formatted countdown timer
                         style: const TextStyle(
                           color: Color(0xFFD0A2F7),
                           fontSize: 20,
@@ -413,12 +419,12 @@ class _HomePageState extends State<HomePage> {
       Fluttertoast.showToast(
           msg:
               'Notification from your group: $notifyMe.\nPlease keep up with your work for the challenge.',
-          toastLength: Toast.LENGTH_LONG, // Duration for the toast
-          gravity: ToastGravity.TOP, // Position of the toast
-          timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
-          backgroundColor: Colors.deepPurple, // Background color of the toast
-          textColor: Colors.white, // Text color of the toast
-          fontSize: 16.0, // Font size of the toast text
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.deepPurple,
+          textColor: Colors.white,
+          fontSize: 16.0,
           webShowClose: true);
     }
     print('Username: ${widget.userData.currentUser?.username}');
@@ -438,8 +444,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SpinKitFadingCircle(
-                color: Colors.deepPurple, // Choose your desired color
-                size: 50.0, // Choose your desired size
+                color: Colors.deepPurple,
+                size: 50.0,
               ),
               SizedBox(height: 20),
               Text(
@@ -516,6 +522,7 @@ class _HomePageState extends State<HomePage> {
                       groupName: privchallengeInfo['groupName'] ?? '',
                       challengeTitle: privchallengeInfo['title'] ?? '',
                       challengeInfo: privchallengeInfo,
+                      points: points,
                     ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -533,6 +540,38 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
+                    if (challengeInfo.isEmpty)
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                        height: 100,
+                        width: 376,
+                        padding:
+                            const EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                        decoration: ShapeDecoration(
+                          color: const Color(0x7FF1EAFF),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          shadows: const [
+                            BoxShadow(
+                              color: Color.fromARGB(163, 207, 162, 247),
+                              blurRadius: 4,
+                              offset: Offset(0, 4),
+                              spreadRadius: 0,
+                            )
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Create some groups on ArtSync and in this area you will find your active group challenges",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF7B33B7),
+                            ),
+                          ),
+                        ),
+                      ),
                     for (int i = 0; i < challengeInfo.length; i++)
                       Challenge(
                         userData: widget.userData,
@@ -541,6 +580,7 @@ class _HomePageState extends State<HomePage> {
                         groupName: challengeInfo[i]['groupName'] ?? '',
                         challengeTitle: challengeInfo[i]['title'] ?? '',
                         challengeInfo: challengeInfo[i],
+                        points: points,
                       ),
                   ],
                 ),

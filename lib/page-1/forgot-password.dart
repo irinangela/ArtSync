@@ -51,9 +51,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
-                              // Navigate to LoginPage1 without context
                               Navigator.pushReplacement(
-                                // Use pushReplacement to replace the current route
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const LoginPage2(),
@@ -86,7 +84,7 @@ class MainText extends StatefulWidget {
   _MainTextState createState() => _MainTextState();
 }
 
-  class _MainTextState extends State<MainText> {
+class _MainTextState extends State<MainText> {
   late bool isTyping;
   late FocusNode focusNode;
 
@@ -167,41 +165,42 @@ class MainText extends StatefulWidget {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: TextFormField(
-                    onChanged: (val) {
-                      widget.onEmailChanged(val);
-                    },
-                    onTap: () {
-                      setState(() {
-                        isTyping = true;
-                      });
-                    },
-                    focusNode: focusNode,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 10.0,
+                    width: 300,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextFormField(
+                      onChanged: (val) {
+                        widget.onEmailChanged(val);
+                      },
+                      onTap: () {
+                        setState(() {
+                          isTyping = true;
+                        });
+                      },
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 10.0,
+                        ),
+                        hintText: isTyping ? '' : 'E-mail',
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 20,
+                          fontFamily: 'Inter',
+                          fontWeight:
+                              isTyping ? FontWeight.bold : FontWeight.w400,
+                        ),
                       ),
-                      hintText: isTyping ? '' : 'E-mail',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
+                      style: const TextStyle(
+                        color: Colors.black,
                         fontSize: 20,
                         fontFamily: 'Inter',
-                        fontWeight: isTyping ? FontWeight.bold : FontWeight.w400,
-                      ),
-                    ),
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w500,
-                      height: 0,
+                        fontWeight: FontWeight.w500,
+                        height: 0,
                       ),
                     ),
                   ),

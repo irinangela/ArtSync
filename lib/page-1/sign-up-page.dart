@@ -39,32 +39,32 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   void initState() {
-  super.initState();
-  emailFocusNode = FocusNode();
-  usernameFocusNode = FocusNode();
-  passwordFocusNode = FocusNode();
-  emailVisible = false;
-  usernameVisible = false;
-  passwordVisible = false;
+    super.initState();
+    emailFocusNode = FocusNode();
+    usernameFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
+    emailVisible = false;
+    usernameVisible = false;
+    passwordVisible = false;
 
-  emailFocusNode.addListener(() {
-    setState(() {
-      emailVisible = emailFocusNode.hasFocus;
+    emailFocusNode.addListener(() {
+      setState(() {
+        emailVisible = emailFocusNode.hasFocus;
+      });
     });
-  });
 
-  usernameFocusNode.addListener(() {
-    setState(() {
-      usernameVisible = usernameFocusNode.hasFocus;
+    usernameFocusNode.addListener(() {
+      setState(() {
+        usernameVisible = usernameFocusNode.hasFocus;
+      });
     });
-  });
 
-  passwordFocusNode.addListener(() {
-    setState(() {
-      passwordVisible = passwordFocusNode.hasFocus;
+    passwordFocusNode.addListener(() {
+      setState(() {
+        passwordVisible = passwordFocusNode.hasFocus;
+      });
     });
-  });
-}
+  }
 
   @override
   void dispose() {
@@ -110,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Enter your E-mail:',
-                    hintText: !emailVisible? 'E-mail' : '',
+                    hintText: !emailVisible ? 'E-mail' : '',
                     onChanged: (val) {
                       setState(() => email = val);
                     },
@@ -130,7 +130,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Pick a username:',
-                    hintText: !usernameVisible? 'Username': '',
+                    hintText: !usernameVisible ? 'Username' : '',
                     onChanged: (val) {
                       setState(() => username = val);
                     },
@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
                   buildTextFormField(
                     label: 'Pick a password:',
-                    hintText: !passwordVisible? 'Password' : '',
+                    hintText: !passwordVisible ? 'Password' : '',
                     onChanged: (val) {
                       setState(() => password = val);
                     },
@@ -158,7 +158,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       if (value!.length < 6) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('The password must be at least 6 characters long.'),
+                            content: Text(
+                                'The password must be at least 6 characters long.'),
                             duration: Duration(seconds: 3),
                           ),
                         );
@@ -197,14 +198,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (!isAvailable) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('The username is not available. Please choose another one.'),
+                          content: Text(
+                              'The username is not available. Please choose another one.'),
                           duration: Duration(seconds: 3),
                         ),
                       );
                     } else {
                       // Username is available, proceed with user creation
                       try {
-                        User? user = await createUserWithEmailAndPassword(email, password);
+                        User? user = await createUserWithEmailAndPassword(
+                            email, password);
 
                         if (user != null) {
                           Navigator.push(
@@ -287,7 +290,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 border: InputBorder.none,
                 hintText: hintText,
                 hintStyle: const TextStyle(
-                  color:  Colors.grey,
+                  color: Colors.grey,
                   fontSize: 20,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w500,

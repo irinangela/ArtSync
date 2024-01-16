@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:myapp/page-1/forgot-password.dart';
 import 'package:myapp/page-1/sign-up-page.dart';
 import 'package:myapp/page-1/home-page.dart';
@@ -27,162 +28,167 @@ class SlidingWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return  Container(
-        width: screenWidth,
-        height: 598,
-        decoration: const ShapeDecoration(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+    return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+      return Transform.translate(
+        offset: Offset(0, isKeyboardVisible ? -80 : 0),
+        child: Container(
+          width: screenWidth,
+          height: 598,
+          decoration: const ShapeDecoration(
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
             ),
           ),
-        ),
-        child: Stack(
-          children: [
-            const Positioned(
-              left: 89,
-              top: 70,
-              child: SizedBox(
-                width: 252,
-                height: 34,
+          child: Stack(
+            children: [
+              const Positioned(
+                left: 89,
+                top: 70,
+                child: SizedBox(
+                  width: 252,
+                  height: 34,
+                  child: Text(
+                    'Login to your account',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w500,
+                      height: 0,
+                    ),
+                  ),
+                ),
+              ),
+              const Positioned(
+                left: 20,
+                top: 150,
                 child: Text(
-                  'Login to your account',
+                  'Please type your E-mail',
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                     height: 0,
                   ),
                 ),
               ),
-            ),
-            const Positioned(
-              left: 20,
-              top: 150,
-              child: Text(
-                'Please type your E-mail',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
+              const Positioned(
+                left: 20,
+                top: 260,
+                child: Text(
+                  'Please type your Password',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w400,
+                    height: 0,
+                  ),
                 ),
               ),
-            ),
-            const Positioned(
-              left: 20,
-              top: 260,
-              child: Text(
-                'Please type your Password',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-                ),
-              ),
-            ),
-            Positioned(
-              left: MediaQuery.of(context).size.width / 2 - 170,
-              top: 190,
-              child: Container(
-                width: 340,
-                height: 45,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: TextField(
-                        controller: emailController,
-                        onTap: () {
-                          emailFocusNode.requestFocus();
-                        },
-                        focusNode: emailFocusNode,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 13.0,
-                            horizontal: 10.0,
+              Positioned(
+                left: MediaQuery.of(context).size.width / 2 - 170,
+                top: 190,
+                child: Container(
+                  width: 340,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        child: TextField(
+                          controller: emailController,
+                          onTap: () {
+                            emailFocusNode.requestFocus();
+                          },
+                          focusNode: emailFocusNode,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 13.0,
+                              horizontal: 10.0,
+                            ),
+                            hintText: isTypingUs ? '' : 'E-mail',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                          hintText: isTypingUs ? '' : 'E-mail',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
+                          style: const TextStyle(
+                            color: Colors.black,
                             fontSize: 16,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w500,
+                            height: 0,
                           ),
-                        ),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              left: MediaQuery.of(context).size.width / 2 - 170,
-              top: 300,
-              child: Container(
-                width: 340,
-                height: 45,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: TextField(
-                        controller: passwordController,
-                        onTap: () {
-                          passwordFocusNode.requestFocus();
-                        },
-                        obscureText: true,
-                        focusNode: passwordFocusNode,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 13.0,
-                            horizontal: 10.0,
+              Positioned(
+                left: MediaQuery.of(context).size.width / 2 - 170,
+                top: 300,
+                child: Container(
+                  width: 340,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        child: TextField(
+                          controller: passwordController,
+                          onTap: () {
+                            passwordFocusNode.requestFocus();
+                          },
+                          obscureText: true,
+                          focusNode: passwordFocusNode,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 13.0,
+                              horizontal: 10.0,
+                            ),
+                            hintText: isTypingPass ? '' : 'Password',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                          hintText: isTypingPass ? '' : 'Password',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
+                          style: const TextStyle(
+                            color: Colors.black,
                             fontSize: 16,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w500,
+                            height: 0,
                           ),
                         ),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-    );
+      );
+    });
   }
 }
 
@@ -226,11 +232,10 @@ class _LoginPage2State extends State<LoginPage2> {
   }
 
   Future<void> _signInWithEmailAndPassword(
-    String email, String password, BuildContext context) async {
+      String email, String password, BuildContext context) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-      // Fetch the user data from Firestore
       var user = _auth.currentUser;
       if (user != null) {
         DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
@@ -258,7 +263,8 @@ class _LoginPage2State extends State<LoginPage2> {
           ));
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomePage(userData: userData)),
+            MaterialPageRoute(
+                builder: (context) => HomePage(userData: userData)),
           );
         }
       }
@@ -349,24 +355,27 @@ class _LoginPage2State extends State<LoginPage2> {
                     ),
                   ),
                 ),
-                const Positioned(
-                  left: 36,
-                  top: 156,
-                  child: SizedBox(
-                    width: 250,
-                    height: 36,
-                    child: Text(
-                      'Welcome back!',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 30,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w800,
-                        height: 0,
+                KeyboardVisibilityBuilder(
+                    builder: (context, isKeyboardVisible) {
+                  return Positioned(
+                    left: 36,
+                    top: isKeyboardVisible ? 116 : 156,
+                    child: const SizedBox(
+                      width: 250,
+                      height: 36,
+                      child: Text(
+                        'Welcome back!',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 30,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w800,
+                          height: 0,
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
                 Container(
                   child: Positioned(
                     left: 0,
@@ -416,8 +425,8 @@ class _LoginPage2State extends State<LoginPage2> {
                     onTap: () {
                       if (emailController.text.isNotEmpty &&
                           passwordController.text.isNotEmpty) {
-                        _signInWithEmailAndPassword(
-                            emailController.text, passwordController.text, context);
+                        _signInWithEmailAndPassword(emailController.text,
+                            passwordController.text, context);
                       } else {
                         _showErrorDialog(
                             context, 'Please enter both email and password.');
@@ -433,7 +442,7 @@ class _LoginPage2State extends State<LoginPage2> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,

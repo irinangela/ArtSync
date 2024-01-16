@@ -43,7 +43,7 @@ class AppState extends ChangeNotifier {
         showText3 = true;
         break;
     }
-    _saveState(); // Save the state to shared preferences
+    _saveState();
     notifyListeners();
   }
 }

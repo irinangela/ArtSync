@@ -114,8 +114,6 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
   Future<void> updateFirestore() async {
     try {
       if (widget.user != null) {
-        //UserData userData = UserData();
-        // Create or update user document in Firestore
         await FirebaseFirestore.instance
             .collection('Users')
             .doc(widget.user!.uid)
@@ -128,17 +126,17 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           'QRcode': 'assets/page-1/images/QRcode.png',
           'ChallengeDuration': 5,
           'PrivateChallengeID': 1,
-          'NextDuration' : 5,
+          'NextDuration': 5,
           'Notifications': {
             'groupname': '0',
             'notify': 0,
           },
           'ChallengePointsUpdated': false,
-          'groupID' : [],
+          'groupID': [],
         }, SetOptions(merge: true));
 
         print('Firestore updated successfully!');
-        // Update UserData with the new user information
+
         userData.setUser(UserInfoModel(
           username: widget.username,
           email: widget.email,
@@ -275,7 +273,8 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
                     await updateFirestore();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  HomePage(userData: userData)),
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(userData: userData)),
                     );
                   },
                   text: 'Sign Up',

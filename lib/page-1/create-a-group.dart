@@ -177,15 +177,15 @@ class _CreateGroupState extends State<CreateGroup> {
                     });
                   },
                   onTap: () {
-                      setState(() {
-                        isTyping = true;
-                      });
-                    },
-                    focusNode: focusNode,
-                  decoration:  InputDecoration(
+                    setState(() {
+                      isTyping = true;
+                    });
+                  },
+                  focusNode: focusNode,
+                  decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText:  isTyping? '' : 'Group name',
-                    hintStyle: TextStyle(
+                    hintText: isTyping ? '' : 'Group name',
+                    hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 20,
                       fontFamily: 'Inter',
@@ -299,15 +299,14 @@ class _CreateGroupState extends State<CreateGroup> {
                           },
                         );
                       } else {
-                        await createGroupInFirestore(
-                                 selectedUsers, groupname);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ProfilePage(userData: widget.userData)),
-                      );
-                      }                      
+                        await createGroupInFirestore(selectedUsers, groupname);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfilePage(userData: widget.userData)),
+                        );
+                      }
                     }
                   },
                   child: Container(

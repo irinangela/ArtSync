@@ -18,8 +18,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) =>
-          AppState()..updateShowText(2), // Provide the AppState
+      create: (context) => AppState()..updateShowText(2),
       child: Consumer<AppState>(
         builder: (context, appState, _) => Container(
           width: 390,
@@ -27,7 +26,7 @@ class _NavigationBar1State extends State<NavigationBar1> {
           margin: const EdgeInsets.fromLTRB(0, 10, 0, 15),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFE5D4FF), // Light Purple Background
+            color: const Color(0xFFE5D4FF),
             borderRadius: BorderRadius.circular(60),
           ),
           child: Row(

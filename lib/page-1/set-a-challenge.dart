@@ -6,11 +6,11 @@ import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
 import 'package:shake/shake.dart';
 
-
 class DropDown extends StatefulWidget {
   final Function(String) onDurationSelected;
 
-  const DropDown({Key? key, required this.onDurationSelected}) : super(key: key);
+  const DropDown({Key? key, required this.onDurationSelected})
+      : super(key: key);
 
   @override
   _DropDownState createState() => _DropDownState();
@@ -45,7 +45,9 @@ class _DropDownState extends State<DropDown> {
                   style: const TextStyle(fontSize: 18),
                 ),
                 Icon(
-                  isDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isDropdownOpen
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                 ),
               ],
             ),
@@ -79,7 +81,8 @@ class _DropDownState extends State<DropDown> {
       onTap: () {
         setState(() {
           dropdownValue = item;
-          widget.onDurationSelected(item); // Notify the parent widget about the selected duration
+          widget.onDurationSelected(
+              item); // Notify the parent widget about the selected duration
           isDropdownOpen = false;
         });
       },
@@ -151,7 +154,7 @@ class _SetChallengeState extends State<SetChallenge> {
   late FocusNode descriptionFocusNode = FocusNode();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  late String selectedDuration;
+  String selectedDuration = '0';
 
   @override
   void initState() {
@@ -161,8 +164,10 @@ class _SetChallengeState extends State<SetChallenge> {
         bool shook = true;
         int maxChallengeId = await findMaxChallengeId();
         int randomChallengeId = Random().nextInt(maxChallengeId) + 1;
-        DocumentSnapshot challengeSnapshot =
-            await FirebaseFirestore.instance.collection('Challenges').doc(randomChallengeId.toString()).get();
+        DocumentSnapshot challengeSnapshot = await FirebaseFirestore.instance
+            .collection('Challenges')
+            .doc(randomChallengeId.toString())
+            .get();
 
         String challengeTitleShook = challengeSnapshot['Title'];
         String challengeDescriptionShook = challengeSnapshot['Description'];
@@ -178,11 +183,11 @@ class _SetChallengeState extends State<SetChallenge> {
         isTypingTit = titleFocusNode.hasFocus;
       });
     });
-    descriptionFocusNode.addListener(() { 
+    descriptionFocusNode.addListener(() {
       setState(() {
-      isTypingDes = descriptionFocusNode.hasFocus;
-       });
-    });    
+        isTypingDes = descriptionFocusNode.hasFocus;
+      });
+    });
   }
 
   @override
@@ -207,289 +212,330 @@ class _SetChallengeState extends State<SetChallenge> {
     }
     return maxChallengeId;
   }
-  
 
   @override
   Widget build(BuildContext context) {
     String groupId = widget.groupId;
     UserData userData = widget.userData;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-      children: [
-        const Positioned.fill(
-          child: Background2(),
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
-        Positioned.fill(
-          child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 60), // Spacing
-                const Text(
-                  'Set a Challenge',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-                const SizedBox(height: 20), // Spacing
-                Container(
-                  width: 300,
-                  height: 130,
-                  padding: const EdgeInsets.only(top: 14, left: 10, bottom: 20),
-                  decoration: ShapeDecoration(
-                    color: const Color(0x7FF1EAFF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+        extendBodyBehindAppBar: true,
+        body: Stack(
+          children: [
+            const Positioned.fill(
+              child: Background2(),
+            ),
+            Positioned.fill(
+                child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 60),
+                    const Text(
+                      'Set a Challenge',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 30,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        height: 0,
+                      ),
                     ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color.fromARGB(163, 207, 162, 247),
-                        blurRadius: 4,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                  child: const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 260,
-                          //height: 130,
-                          child: Text(
-                            'Shake your device to get a randomly generated challenge...\n              ...or create your own:',
-                            style: TextStyle(
-                              color: Colors.black,
+                    const SizedBox(height: 20),
+                    Container(
+                      width: 300,
+                      height: 130,
+                      padding:
+                          const EdgeInsets.only(top: 14, left: 10, bottom: 20),
+                      decoration: ShapeDecoration(
+                        color: const Color(0x7FF1EAFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        shadows: const [
+                          BoxShadow(
+                            color: Color.fromARGB(163, 207, 162, 247),
+                            blurRadius: 4,
+                            offset: Offset(0, 4),
+                            spreadRadius: 0,
+                          )
+                        ],
+                      ),
+                      child: const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 260,
+                              //height: 130,
+                              child: Text(
+                                'Shake your device to get a randomly generated challenge...\n              ...or create your own:',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w400,
+                                  height: 0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 60), // Spacing
+                    const Text(
+                      'New Challenge’s name:',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: 500,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          controller: titleController,
+                          focusNode: titleFocusNode,
+                          onTap: () {
+                            setState(() {
+                              isTypingTit = true;
+                            });
+                            titleFocusNode.requestFocus();
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: isTypingTit ? '' : 'e.g. Starry Night',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
                               fontSize: 20,
                               fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 60), // Spacing
-                const Text(
-                  'New Challenge’s name:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  width: 500,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextFormField(
-                      controller: titleController,
-                      focusNode: titleFocusNode,
-                      onTap: () {
-                        setState(() {
-                          isTypingTit = true;
-                        });
-                        titleFocusNode.requestFocus();
-                      },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: isTypingTit? '': 'e.g. Starry Night',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            height: 0,
+                          ),
                         ),
                       ),
-                      style: const TextStyle(
+                    ),
+                    const SizedBox(height: 20), // Spacing
+                    const Text(
+                      'New Challenge’s description:',
+                      style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                         height: 0,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20), // Spacing
-                const Text(
-                  'New Challenge’s description:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                  ),
-                ),
-                const SizedBox(height: 20), // Spacing
-                Container(
-                  width: 500,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: TextFormField(
-                      controller: descriptionController,
-                      focusNode: descriptionFocusNode,
-                      onTap: () {
-                        setState(() {
-                          isTypingDes = true;
-                        });
-                        descriptionFocusNode.requestFocus();
-                      },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: isTypingDes? '' :'e.g. Imagine you just cut your ear off...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
+                    const SizedBox(height: 20), // Spacing
+                    Container(
+                      width: 500,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          controller: descriptionController,
+                          focusNode: descriptionFocusNode,
+                          onTap: () {
+                            setState(() {
+                              isTypingDes = true;
+                            });
+                            descriptionFocusNode.requestFocus();
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: isTypingDes
+                                ? ''
+                                : 'e.g. Imagine you just cut your ear off...',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            height: 0,
+                          ),
+                          minLines: 1,
+                          maxLines: 10, // Allow up to 10 lines
                         ),
                       ),
-                      style: const TextStyle(
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Text(
+                      textAlign: TextAlign.center,
+                      'Choose the duration of the challenge:',
+                      style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                         height: 0,
                       ),
-                      minLines: 1,
-                      maxLines: 10, // Allow up to 10 lines
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    Center(child: DropDown(onDurationSelected: (duration) {
+                      selectedDuration = duration;
+                    })),
+                    const SizedBox(height: 20),
+                  ],
                 ),
+              ),
+            )),
+            Positioned(
+              bottom: 20,
+              left: 250,
+              right: 30,
+              child: SizedBox(
+                width: 250,
+                height: 50,
+                child: SubmitButton(
+                  onPressed: () async {
+                    if (!shook) {
+                      String title = titleController.text;
+                      String description = descriptionController.text;
+                      if (title.isNotEmpty &&
+                          description.isNotEmpty &&
+                          selectedDuration != '0') {
+                        DocumentReference challengeDocRef =
+                            await FirebaseFirestore.instance
+                                .collection('Challenges')
+                                .add({
+                          'Title': title,
+                          'Description': description,
+                        });
+                        String challengeId = challengeDocRef.id;
 
-                const SizedBox(height: 20), // Spacing
-                const Text(
-                  textAlign: TextAlign.center,
-                  'Choose the duration of the challenge:',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: DropDown(onDurationSelected: (duration) {
-                  selectedDuration = duration; 
-                })
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ), 
-        )
-        ),
-        Positioned(
-          bottom: 20,
-          left: 250,
-          right: 30,
-          child: SizedBox(
-            width: 250,
-            height: 50,
-            child: SubmitButton(
-              onPressed: () async {
-                if (!shook) {
-                String title = titleController.text;
-                String description = descriptionController.text;
-                if (title.isNotEmpty && description.isNotEmpty) {
-                    DocumentReference challengeDocRef =
-                        await FirebaseFirestore.instance.collection('Challenges').add({
-                      'Title': title,
-                      'Description': description,
-                    });
-                    String challengeId = challengeDocRef.id;
+                        await FirebaseFirestore.instance
+                            .collection('Groups')
+                            .doc(groupId)
+                            .update({
+                          'ChallengeID': challengeId,
+                          'Duration': getDurationValue(selectedDuration),
+                        });
 
-                    await FirebaseFirestore.instance.collection('Groups').doc(groupId).update({
-                      'ChallengeID': challengeId,
-                      'Duration': getDurationValue(selectedDuration),
-                    });
+                        userData.updateSubmissionsID(groupId);
 
-                   userData.updateSubmissionsID(groupId);
+                        DocumentSnapshot<Map<String, dynamic>>
+                            participantsSnapshot = await FirebaseFirestore
+                                .instance
+                                .collection('Groups')
+                                .doc(groupId)
+                                .get();
 
-                      DocumentSnapshot<Map<String, dynamic>> participantsSnapshot =
-                        await FirebaseFirestore.instance.collection('Groups').doc(groupId).get();
+                        List<String> participantUsernames = List<String>.from(
+                            participantsSnapshot['Participants']);
 
-                    List<String> participantUsernames = List<String>.from(participantsSnapshot['Participants']);
+                        for (String username in participantUsernames) {
+                          QuerySnapshot userQuerySnapshot =
+                              await FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .where('username', isEqualTo: username)
+                                  .get();
 
-                    for (String username in participantUsernames) {
-                      QuerySnapshot userQuerySnapshot = await FirebaseFirestore.instance.collection('Users').where('username', isEqualTo: username).get();
+                          if (userQuerySnapshot.docs.isNotEmpty) {
+                            var userDocument = userQuerySnapshot.docs.first;
+                            userDocument.reference
+                                .update({'ChallengePointsUpdated': false});
+                          }
+                        }
 
-                      if (userQuerySnapshot.docs.isNotEmpty) {
-                        var userDocument = userQuerySnapshot.docs.first;
-                        userDocument.reference.update({'ChallengePointsUpdated': false});
+                        // ignore: use_build_context_synchronously
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  HomePage(userData: userData)),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Title, description and duration cannot be empty.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       }
+                    } else {
+                      DocumentReference challengeDocRef =
+                          await FirebaseFirestore.instance
+                              .collection('Challenges')
+                              .add({
+                        'Title': challengeTitleShook,
+                        'Description': challengeDescriptionShook,
+                      });
+                      String challengeId = challengeDocRef.id;
+
+                      await FirebaseFirestore.instance
+                          .collection('Groups')
+                          .doc(groupId)
+                          .update({
+                        'ChallengeID': challengeId,
+                        'Duration': getDurationValue(selectedDuration),
+                      });
+
+                      userData.updateSubmissionsID(groupId);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(userData: userData)),
+                      );
                     }
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(userData: userData)),
-                    );
-                } else {
-                  // Show an error message or handle the case where title or description is empty
-                  print('Title and description cannot be empty.');
-                }
-                } else {
-                  DocumentReference challengeDocRef =
-                        await FirebaseFirestore.instance.collection('Challenges').add({
-                      'Title': challengeTitleShook,
-                      'Description': challengeDescriptionShook,
-                    });
-                    String challengeId = challengeDocRef.id;
-
-                    await FirebaseFirestore.instance.collection('Groups').doc(groupId).update({
-                      'ChallengeID': challengeId,
-                      'Duration': getDurationValue(selectedDuration),
-                    });
-
-                   userData.updateSubmissionsID(groupId);
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(userData: userData)),
-                    );
-                }
-              },
-              text: 'Submit',
-              fontSize: 20,
+                  },
+                  text: 'Submit',
+                  fontSize: 20,
+                ),
+              ),
             ),
-          ),
-        ),
-        
-      ],    
-        )
-    
-    );
+          ],
+        ));
   }
 
   int getDurationValue(String item) {
