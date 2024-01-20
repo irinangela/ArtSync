@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myapp/models.dart';
 import 'package:myapp/page-1/NavigationBar.dart';
 import 'package:myapp/page-1/create-a-group.dart';
@@ -48,37 +49,78 @@ void _showQRcode(BuildContext context) {
 }
 
 void _showDeleteConfirmationDialog(BuildContext context, String groupid,
-    List<Map<String, String>> userList, UserData userData) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Delete Group'),
-        content: const Text('Are you sure you want to delete this group?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, false);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await deleteGroupAndReferences(groupid, userList);
-              Navigator.pop(context, true);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfilePage(userData: userData),
-                ),
-              );
-            },
-            child: const Text('Okay'),
-          ),
-        ],
-      );
-    },
-  );
+    List<Map<String, String>> userList, UserData userData, String groupname) {
+  //got enough users you user can just leave
+  if (userList.length > 3) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Leave Group'),
+          content: const Text('Are you sure you want to leave this group?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await leaveGroup(userData.currentUser!.username, groupid);
+                Navigator.pop(context, true);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(userData: userData),
+                  ),
+                );
+              },
+              child: const Text('Leave'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //not enough users to maintain the froup so delete it
+  else {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Group'),
+          content: const Text(
+              'Are you sure you want to leave this group? This group will then be deleted for all members remaining cause a group of 2 users cannot be formed!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await deleteGroup(groupid, userList);
+                await deleteNotify(
+                    userData.currentUser!.username, userList, groupname);
+
+                Navigator.pop(context, true);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(userData: userData),
+                  ),
+                );
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class CircularUserContainer extends StatelessWidget {
@@ -220,7 +262,8 @@ class _GroupContainerState extends State<GroupContainer> {
                               context,
                               widget.groupinfo['groupid']!,
                               widget.members,
-                              widget.userData);
+                              widget.userData,
+                              widget.groupinfo['groupname']!);
                         },
                         child: Container(
                           width: 30,
@@ -380,6 +423,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> groups = [];
   List<List<Map<String, String>>> allGroupMembers = [];
   bool isLoading = true;
+  Map<String?, String?> notifyMe = {'groupName': 'empty', 'user': 'empty'};
   int asyncOperationsCount = 2;
 
   @override
@@ -444,6 +488,8 @@ class _ProfilePageState extends State<ProfilePage> {
       List<Map<String, String>> groupMembers = await getGroupMembers(groupId);
 
       allGroupMembers.add(groupMembers);
+
+      notifyMe = await getDeleteNotification(username);
     }
 
     setState(() {
@@ -476,6 +522,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (notifyMe['groupName'] != 'empty' && notifyMe['user'] != 'empty') {
+      Fluttertoast.showToast(
+          msg:
+              'Your group ${notifyMe['groupName']} has been deleted.\nUser: ${notifyMe['user']} left the group.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.deepPurple,
+          textColor: Colors.white,
+          fontSize: 16.0,
+          webShowClose: true);
+    }
     print(groups);
     print(Alignment.bottomCenter);
 

@@ -471,7 +471,8 @@ Future<void> createGroupInFirestore(
 }
 
 //profile page
-Future<void> deleteGroupAndReferences(
+//if members reamainig are not enough to maintain a group(2) delete it
+Future<void> deleteGroup(
     String groupid, List<Map<String, String>> userList) async {
   try {
     await FirebaseFirestore.instance.collection('Groups').doc(groupid).delete();
@@ -502,6 +503,45 @@ Future<void> deleteGroupAndReferences(
   } catch (e) {
     print('Error deleting group document and references: $e');
     // Handle errors as needed
+  }
+}
+
+//if memebers are enough just let the user leave the group
+Future<void> leaveGroup(String username, String groupId) async {
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('Users');
+  final CollectionReference groupsCollection =
+      FirebaseFirestore.instance.collection('Groups');
+
+  // Step 1: Update Users collection
+  QuerySnapshot userQuery =
+      await usersCollection.where('username', isEqualTo: username).get();
+  if (userQuery.docs.isNotEmpty) {
+    DocumentSnapshot userDocument = userQuery.docs.first;
+    List<dynamic> userGroups = userDocument['groupID'] ?? [];
+    userGroups.remove(groupId);
+
+    await usersCollection.doc(userDocument.id).update({'groupID': userGroups});
+  }
+
+  // Step 2: Update Groups collection
+  DocumentReference groupDocument = groupsCollection.doc(groupId);
+  DocumentSnapshot groupSnapshot = await groupDocument.get();
+
+  if (groupSnapshot.exists) {
+    // Update Participants array
+    List<dynamic> participants = groupSnapshot['Participants'] ?? [];
+    participants.remove(username);
+
+    // Update Submissions map
+    Map<String, dynamic> submissions = groupSnapshot['Submissions'] ?? {};
+    submissions.remove(username);
+
+    // Perform the update
+    await groupDocument.update({
+      'Participants': participants,
+      'Submissions': submissions,
+    });
   }
 }
 
@@ -629,5 +669,74 @@ Future<int?> getUserPoints(String username) async {
   } catch (e) {
     print('Error fetching user points: $e');
     return null;
+  }
+}
+
+Future<void> deleteNotify(String username, List<Map<String, String>> userList,
+    String groupname) async {
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('Users');
+
+  for (Map<String, String> userMap in userList) {
+    String? targetUsername = userMap['username'];
+
+    // Check if the targetUsername is different from the input username
+    if (targetUsername != username) {
+      // Update Notifications field for each matching document
+      QuerySnapshot userQuery = await usersCollection
+          .where('username', isEqualTo: targetUsername)
+          .get();
+      if (userQuery.docs.isNotEmpty) {
+        DocumentSnapshot userDocument = userQuery.docs.first;
+
+        // Update Notifications map
+        Map<String, dynamic> notifications =
+            userDocument['Notifications'] ?? {};
+        notifications['deletedgroup'] = groupname;
+        notifications['deletenotify'] = 1;
+        notifications['username'] = username;
+
+        // Perform the update
+        await usersCollection
+            .doc(userDocument.id)
+            .update({'Notifications': notifications});
+      }
+    }
+  }
+}
+
+Future<Map<String?, String?>> getDeleteNotification(String username) async {
+  try {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('Users');
+
+    QuerySnapshot querySnapshot =
+        await usersCollection.where('username', isEqualTo: username).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userDocument =
+          querySnapshot.docs.first.data() as Map<String, dynamic>;
+
+      if (userDocument['Notifications'] != null &&
+          userDocument['Notifications']['deletenotify'] == 1) {
+        String? groupName = userDocument['Notifications']['deletedgroup'];
+        String? user = userDocument['Notifications']['username'];
+
+        await usersCollection.doc(querySnapshot.docs.first.id).update({
+          'Notifications.deletenotify': 0,
+          'Notifications.deletedgroup': '0',
+          'Notifications.username': '0',
+        });
+
+        return {'groupName': groupName, 'user': user};
+      } else {
+        return {'groupName': 'empty', 'user': 'empty'};
+      }
+    }
+
+    return {'groupName': 'empty', 'user': 'empty'};
+  } catch (e) {
+    print('Error getting groupname and resetting notification: $e');
+    return {'groupName': 'empty', 'user': 'empty'};
   }
 }

@@ -130,6 +130,9 @@ class _ChooseAvatarState extends State<ChooseAvatar> {
           'Notifications': {
             'groupname': '0',
             'notify': 0,
+            'deletenotify': 0,
+            'deletedgroup': '0',
+            'username': '0',
           },
           'ChallengePointsUpdated': false,
           'groupID': [],
