@@ -564,7 +564,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: const Center(
                           child: Text(
-                            "Create some groups on ArtSync and in this area you will find your active group challenges",
+                            "Get motivated with ArtSync and in this area you will find your active group challenges",
                             style: TextStyle(
                               fontSize: 20,
                               color: Color(0xFF7B33B7),
