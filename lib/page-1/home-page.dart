@@ -586,7 +586,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            NavigationBar1(userData: widget.userData),
+            NavigationBar1(userData: widget.userData, selectedIndex: 2),
           ],
         ),
       ),

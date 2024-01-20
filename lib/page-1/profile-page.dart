@@ -782,7 +782,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               )),
             ),
-            NavigationBar1(userData: widget.userData),
+            NavigationBar1(userData: widget.userData, selectedIndex: 3),
           ],
         ),
       ),
