@@ -3,6 +3,7 @@ import 'package:myapp/models.dart';
 import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/page-1/profile-page.dart';
 import 'package:myapp/page-1/scanner-page.dart';
+import 'package:myapp/page-1/scanner-page2.dart';
 
 class NavigationBar1 extends StatelessWidget {
   final UserData userData;
@@ -32,7 +33,19 @@ class NavigationBar1 extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const QRViewExample()),
+                MaterialPageRoute(
+                    builder: (context) => QRViewExample(
+                          userData: userData,
+                        )),
+              );
+            },
+            onLongPress: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => QRViewExample1(
+                          userData: userData,
+                        )),
               );
             },
             child: RoundedContainer(

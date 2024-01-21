@@ -29,7 +29,21 @@ class _CameraAppState extends State<CameraApp> {
         });
       }
     } on CameraException catch (e) {
-      if (e.code == 'CameraAccessDenied') {}
+      if (e.code == 'CameraAccessDenied') {
+        // Handle camera access denied
+      }
+    }
+  }
+
+  Future<void> takePicture() async {
+    try {
+      final XFile picture = await _controller!.takePicture();
+      // Do something with the picture (e.g., save it or display it)
+      print('Picture saved to: ${picture.path}');
+      Navigator.pop(context);
+    } catch (e) {
+      // Handle camera errors
+      print('Error taking picture: $e');
     }
   }
 
@@ -43,10 +57,33 @@ class _CameraAppState extends State<CameraApp> {
   Widget build(BuildContext context) {
     if (isCameraInitialized) {
       return Scaffold(
-        body: CameraPreview(_controller!),
+        backgroundColor: Colors.purple[200],
+        body: Stack(
+          children: [
+            CameraPreview(_controller!),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: takePicture,
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(16),
+                  ),
+                  child: Icon(
+                    Icons.camera,
+                    size: 40,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     } else {
       return const Scaffold(
+        backgroundColor: Colors.black,
         body: Center(
           child: CircularProgressIndicator(),
         ),

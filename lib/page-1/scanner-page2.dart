@@ -10,15 +10,15 @@ import 'package:myapp/page-1/home-page.dart';
 import 'package:myapp/scanner-functions.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class QRViewExample extends StatefulWidget {
+class QRViewExample1 extends StatefulWidget {
   UserData userData;
-  QRViewExample({Key? key, required this.userData}) : super(key: key);
+  QRViewExample1({Key? key, required this.userData}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRViewExampleState();
 }
 
-class _QRViewExampleState extends State<QRViewExample> {
+class _QRViewExampleState extends State<QRViewExample1> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -34,40 +34,35 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller!.resumeCamera();
   }
 
-  Future<void> updateFriends(String currentUser, String friendUsername) async {
-    try {
-      var currentUserDoc = await FirebaseFirestore.instance
-          .collection('Users')
-          .where('username', isEqualTo: currentUser)
-          .get();
+  Future<void> joingroup(String username, String groupId) async {
+    // Reference to Firestore instance
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      if (currentUserDoc.docs.isNotEmpty) {
-        var currentUserDocRef = currentUserDoc.docs.first.reference;
+    // Update Users collection
+    CollectionReference usersCollection = firestore.collection('Users');
+    QuerySnapshot userQuery =
+        await usersCollection.where('username', isEqualTo: username).get();
 
-        await currentUserDocRef.update({
-          'Friends': FieldValue.arrayUnion([friendUsername]),
-        });
-      } else {
-        print('Current user document not found in Firestore');
-      }
+    userQuery.docs.forEach((userDoc) {
+      // Update the Users collection document
+      usersCollection.doc(userDoc.id).update({
+        'groupID': FieldValue.arrayUnion([groupId]),
+      });
+    });
 
-      var currentUserDoc1 = await FirebaseFirestore.instance
-          .collection('Users')
-          .where('username', isEqualTo: friendUsername)
-          .get();
+    // Update Groups collection
+    CollectionReference groupsCollection = firestore.collection('Groups');
 
-      if (currentUserDoc1.docs.isNotEmpty) {
-        var currentUserDocRef1 = currentUserDoc1.docs.first.reference;
+    // Directly reference the document using its ID (assuming groupId is the document ID)
+    DocumentReference groupDocRef = groupsCollection.doc(groupId);
 
-        await currentUserDocRef1.update({
-          'Friends': FieldValue.arrayUnion([currentUser]),
-        });
-      } else {
-        print('Current user document not found in Firestore');
-      }
-    } catch (e) {
-      print('Error updating friend list in Firestore: $e');
-    }
+    // Update the Participants array and Submissions map
+    await groupDocRef.update({
+      'Participants': FieldValue.arrayUnion([username]),
+      'Submissions': {
+        username: {'photoURL': '0', 'Rating': 0},
+      },
+    });
   }
 
   @override
@@ -87,7 +82,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                     Text(
                         'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
                   else
-                    const Text('Scan a code to add a friend'),
+                    const Text('Scan a code to join a group'),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -195,7 +190,7 @@ class _QRViewExampleState extends State<QRViewExample> {
       // Check if the result is not null
       if (result != null) {
         // Call updateFriends function with the scanned result
-        await updateFriends(
+        joingroup(
             widget.userData.currentUser!.username, result!.code.toString());
 
         // Close the scanner after updating friends

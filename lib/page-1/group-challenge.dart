@@ -3,6 +3,7 @@ import 'package:myapp/models.dart';
 import 'package:myapp/page-1/camera.dart';
 import 'package:myapp/page-1/rating-page.dart';
 import 'package:myapp/page-1/services.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class MyImageContainer extends StatefulWidget {
   final String user;
@@ -79,7 +80,8 @@ class _MyImageContainerState extends State<MyImageContainer> {
   }
 }
 
-void _showCenteredContainerWithImage(BuildContext context, String groupname) {
+void _showCenteredContainerWithImage(
+    BuildContext context, String groupname, String groupid) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -97,12 +99,13 @@ void _showCenteredContainerWithImage(BuildContext context, String groupname) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("$groupname QRcode:"),
-              Image.asset(
+              /*Image.asset(
                 'assets/page-1/images/QRcode.png',
                 width: 300,
                 height: 300,
                 fit: BoxFit.contain,
-              ),
+              ),*/
+              QrImageView(data: groupid, version: QrVersions.auto, size: 300),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
@@ -289,7 +292,9 @@ class _GroupChallengeState extends State<GroupChallenge> {
                 GestureDetector(
                   onTap: () {
                     _showCenteredContainerWithImage(
-                        context, widget.challengeInfo['groupName']!);
+                        context,
+                        widget.challengeInfo['groupName']!,
+                        widget.challengeInfo['groupId']!);
                   },
                   child: Image.asset(
                     'assets/page-1/images/QRbutton.png',

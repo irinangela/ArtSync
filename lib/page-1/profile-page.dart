@@ -8,8 +8,9 @@ import 'package:myapp/page-1/create-a-group.dart';
 import 'package:myapp/page-1/services.dart';
 import 'package:myapp/page-1/set-a-challenge.dart';
 import 'package:myapp/page-1/settings.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-void _showQRcode(BuildContext context) {
+void _showQRcode(BuildContext context, String username) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -27,12 +28,13 @@ void _showQRcode(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text("QR code"),
-              Image.asset(
+              /*Image.asset(
                 'assets/page-1/images/QRcode.png',
                 width: 300,
                 height: 300,
                 fit: BoxFit.contain,
-              ),
+              ),*/
+              QrImageView(data: username, version: QrVersions.auto, size: 300),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
@@ -145,7 +147,7 @@ class CircularUserContainer extends StatelessWidget {
         children: [
           GestureDetector(
             onLongPress: () {
-              _showQRcode(context);
+              _showQRcode(context, username);
             },
             child: Container(
               width: imageSize,
@@ -626,7 +628,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        _showQRcode(context);
+                        _showQRcode(
+                            context, widget.userData.currentUser!.username);
                       },
                       child: Container(
                         margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
